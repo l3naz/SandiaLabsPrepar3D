@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace Managed_Data_Request
+namespace Managed_Dashboard
 {
     static class Program
     {

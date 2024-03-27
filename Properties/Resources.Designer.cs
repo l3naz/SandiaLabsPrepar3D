@@ -11,7 +11,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Managed_Data_Request.Properties {
+namespace Managed_Dashboard.Properties {
     using System;
     
     

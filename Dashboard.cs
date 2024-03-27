@@ -22,7 +22,7 @@ using System.Windows.Forms;
 using LockheedMartin.Prepar3D.SimConnect;
 using System.Runtime.InteropServices;
 
-namespace Managed_Data_Request
+namespace Managed_Dashboard
 {
     public partial class Form1 : Form
     {
@@ -54,6 +54,8 @@ namespace Managed_Data_Request
             public double latitude;
             public double longitude;
             public double altitude;
+            // Ryan-- adding speed
+            public double speed;
         };
 
         public Form1()
