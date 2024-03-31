@@ -2,10 +2,10 @@ C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\Output\Debug\SimCon
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\Managed Data Request.exe
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\Managed Data Request.pdb
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\SimConnect Samples\Managed Dashboard\obj\x64\Debug\Managed Dashboard.csproj.AssemblyReference.cache
-C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\SimConnect Samples\Managed Dashboard\obj\x64\Debug\Managed_Data_Request.Form1.resources
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\SimConnect Samples\Managed Dashboard\obj\x64\Debug\Managed_Data_Request.Properties.Resources.resources
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\SimConnect Samples\Managed Dashboard\obj\x64\Debug\Managed Dashboard.csproj.GenerateResource.cache
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\SimConnect Samples\Managed Dashboard\obj\x64\Debug\Managed Dashboard.csproj.CoreCompileInputs.cache
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\SimConnect Samples\Managed Dashboard\obj\x64\Debug\Managed .223960C2.Up2Date
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\SimConnect Samples\Managed Dashboard\obj\x64\Debug\Managed Data Request.exe
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\SimConnect Samples\Managed Dashboard\obj\x64\Debug\Managed Data Request.pdb
+C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\SimConnect Samples\Managed Dashboard\obj\x64\Debug\Managed_Dashboard.Form1.resources

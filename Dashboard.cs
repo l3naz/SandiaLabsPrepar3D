@@ -33,6 +33,8 @@ namespace Managed_Dashboard
         // SimConnect object
         SimConnect simconnect = null;
 
+        // Ryan-- timer will space out requests by 1 second
+        Timer requestTimer = new Timer();
         enum DEFINITIONS
         {
             Struct1,
@@ -55,14 +57,19 @@ namespace Managed_Dashboard
             public double longitude;
             public double altitude;
             // Ryan-- adding speed
-            public double speed;
+            //public double speed;
         };
 
         public Form1()
         {
             InitializeComponent();
 
-            setButtons(true, false, false);
+            // Ryan-- remove middle button parameter
+            setButtons(true, false);
+            
+            // Ryan-- Set timer interval to 1 second
+            requestTimer.Interval = 1000;
+            requestTimer.Tick += RequestTimer_Tick;
         }
         // Simconnect client will send a win32 message when there is 
         // a packet to process. ReceiveMessage must be called to
@@ -83,10 +90,11 @@ namespace Managed_Dashboard
             }
         }
 
-        private void setButtons(bool bConnect, bool bGet, bool bDisconnect)
+        // Ryan-- remove one parameter (bool bGet). commented out middle button line.
+        private void setButtons(bool bConnect, bool bDisconnect)
         {
             buttonConnect.Enabled = bConnect;
-            buttonRequestData.Enabled = bGet;
+            // buttonRequestData.Enabled = bGet;
             buttonDisconnect.Enabled = bDisconnect;
         }
 
@@ -135,6 +143,9 @@ namespace Managed_Dashboard
         void simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
             displayText("Connected to Prepar3D");
+
+            // Ryan-- Start the timer when connected
+            requestTimer.Start();
         }
 
         // The case where the user closes Prepar3D
@@ -184,7 +195,8 @@ namespace Managed_Dashboard
                     // the constructor is similar to SimConnect_Open in the native API
                     simconnect = new SimConnect("Managed Data Request", this.Handle, WM_USER_SIMCONNECT, null, 0);
 
-                    setButtons(false, true, true);
+                    // Ryan-- middle parameter removed
+                    setButtons(false, true);
 
                     initDataRequest();
 
@@ -199,23 +211,38 @@ namespace Managed_Dashboard
                 displayText("Error - try again");
                 closeConnection();
 
-                setButtons(true, false, false);
+                // Ryan-- middle parameter removed
+                setButtons(true, false);
             }
         }
 
         private void buttonDisconnect_Click(object sender, EventArgs e)
         {
             closeConnection();
-            setButtons(true, false, false);
+            // Ryan-- middle parameter removed
+            setButtons(true, false);
         }
 
+        /* Ryan-- comment out old button request
         private void buttonRequestData_Click(object sender, EventArgs e)
         {
             // The following call returns identical information to:
             // simconnect.RequestDataOnSimObject(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.ONCE);
-             
-            simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1,DEFINITIONS.Struct1, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+
+            simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
             displayText("Request sent...");
+        }
+        */
+
+        // Ryan-- new request event handler
+        private void RequestTimer_Tick(object sender, EventArgs e)
+        {
+            // Send data request every second
+            if (simconnect != null)
+            {
+                simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+                displayText("Request sent...");
+            }
         }
 
         // Response number

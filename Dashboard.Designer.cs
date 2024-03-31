@@ -34,7 +34,8 @@ namespace Managed_Dashboard
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.buttonConnect = new System.Windows.Forms.Button();
             this.buttonDisconnect = new System.Windows.Forms.Button();
-            this.buttonRequestData = new System.Windows.Forms.Button();
+            // Ryan-- remove request button
+            // this.buttonRequestData = new System.Windows.Forms.Button();
             this.richResponse = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -63,6 +64,8 @@ namespace Managed_Dashboard
             // 
             // buttonRequestData
             // 
+
+            /* Ryan-- remove the middle button (request data)
             this.buttonRequestData.Location = new System.Drawing.Point(16, 118);
             this.buttonRequestData.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.buttonRequestData.Name = "buttonRequestData";
@@ -70,7 +73,9 @@ namespace Managed_Dashboard
             this.buttonRequestData.TabIndex = 2;
             this.buttonRequestData.Text = "Request User Aircraft Data";
             this.buttonRequestData.UseVisualStyleBackColor = true;
-            this.buttonRequestData.Click += new System.EventHandler(this.buttonRequestData_Click);
+            this.buttonRequestData.Click += new System.EventHandler(this.RequestTimer_Tick); // Ryan-- change to timer event handler
+            */
+
             // 
             // richResponse
             // 
@@ -99,7 +104,8 @@ namespace Managed_Dashboard
             this.ClientSize = new System.Drawing.Size(524, 260);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.richResponse);
-            this.Controls.Add(this.buttonRequestData);
+            // Ryan-- remove request button
+            // this.Controls.Add(this.buttonRequestData);
             this.Controls.Add(this.buttonDisconnect);
             this.Controls.Add(this.buttonConnect);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
@@ -117,7 +123,8 @@ namespace Managed_Dashboard
 
         private System.Windows.Forms.Button buttonConnect;
         private System.Windows.Forms.Button buttonDisconnect;
-        private System.Windows.Forms.Button buttonRequestData;
+        // Ryan-- remove request button
+        // private System.Windows.Forms.Button buttonRequestData;
         private System.Windows.Forms.RichTextBox richResponse;
         private System.Windows.Forms.Label label1;
     }
