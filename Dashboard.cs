@@ -56,8 +56,8 @@ namespace Managed_Dashboard
             public double latitude;
             public double longitude;
             public double altitude;
-            // Ryan-- adding speed
-            //public double speed;
+            // Ryan-- adding speed property
+            public double speed;
         };
 
         public Form1()
@@ -126,6 +126,8 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Latitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Longitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Altitude", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                // Ryan-- on data request, we also define speed 
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Ground Speed", "knots", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED); // Add speed definition
 
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
                 // if you skip this step, you will only receive a uint in the .dwData field.
@@ -178,6 +180,8 @@ namespace Managed_Dashboard
                     displayText("Lat:   " + s1.latitude);
                     displayText("Lon:   " + s1.longitude);
                     displayText("Alt:   " + s1.altitude);
+                    // Ryan-- adding speed to display
+                    displayText("Speed: " + s1.speed); // Display speed
                     break;
 
                 default:
