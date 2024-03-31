@@ -58,6 +58,8 @@ namespace Managed_Dashboard
             public double altitude;
             // Ryan-- adding speed property
             public double speed;
+            // Ryan--
+            public double time;
         };
 
         public Form1()
@@ -125,10 +127,13 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Title", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Latitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Longitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Altitude", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                // Ryan-- changed from altitude to altitude above ground
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Alt Above Ground", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- on data request, we also define speed
                 // Gaby -- fixed to be able to update speed
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Ground Velocity", "knots", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED); // Add speed definition
+                // Ryan--
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Absolute Time", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
 
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
                 // if you skip this step, you will only receive a uint in the .dwData field.
@@ -183,6 +188,8 @@ namespace Managed_Dashboard
                     displayText("Alt:   " + s1.altitude);
                     // Ryan-- adding speed to display
                     displayText("Speed: " + s1.speed); // Display speed
+                    // Ryan-- display time
+                    displayText("Time: " + s1.time);
                     break;
 
                 default:
@@ -197,8 +204,9 @@ namespace Managed_Dashboard
             {
                 try
                 {
-                    // the constructor is similar to SimConnect_Open in the native API
-                    simconnect = new SimConnect("Managed Data Request", this.Handle, WM_USER_SIMCONNECT, null, 0);
+                    // the constructor is similar to SimConnect_Open in the native API4
+                    // Ryan-- change name to Managed Dashboard
+                    simconnect = new SimConnect("Managed Dashboard", this.Handle, WM_USER_SIMCONNECT, null, 0);
 
                     // Ryan-- middle parameter removed
                     setButtons(false, true);
