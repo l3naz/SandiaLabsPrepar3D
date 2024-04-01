@@ -58,8 +58,10 @@ namespace Managed_Dashboard
             public double altitude;
             // Ryan-- adding speed property
             public double speed;
-            // Ryan--
+            // Ryan-- absolute time
             public double time;
+            // Ryan--
+            public double magnetic_heading;
         };
 
         public Form1()
@@ -132,12 +134,15 @@ namespace Managed_Dashboard
                 // Ryan-- on data request, we also define speed
                 // Gaby -- fixed to be able to update speed
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Ground Velocity", "knots", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED); // Add speed definition
-                // Ryan--
+                // Ryan-- get absolute time from epoch in seconds
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Absolute Time", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-
+                // Ryan-- get the x and y velocity
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "PLane Heading Degrees Magnetic", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                //simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "STRUCT PBH32", "Simconnect");
+                
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
                 // if you skip this step, you will only receive a uint in the .dwData field.
-                simconnect.RegisterDataDefineStruct<Struct1>(DEFINITIONS.Struct1);
+               simconnect.RegisterDataDefineStruct<Struct1>(DEFINITIONS.Struct1);
 
                 // catch a simobject data request
                 simconnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(simconnect_OnRecvSimobjectDataBytype);
@@ -176,20 +181,32 @@ namespace Managed_Dashboard
 
         void simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
         {
-
+            
             switch ((DATA_REQUESTS)data.dwRequestID)
             {
                 case DATA_REQUESTS.REQUEST_1:
                     Struct1 s1 = (Struct1)data.dwData[0];
+                    
+                    // Ryan--
+                    // Convert seconds to ticks (1 tick = 100 nanoseconds)
+                    // Create DateTime object from ticks
+                    long ticks = (long)(s1.time * TimeSpan.TicksPerSecond);
+                    DateTime dateTime = new DateTime(ticks, DateTimeKind.Utc);
+
+                    // Ryan--
+                    // Convert radians to degrees
+                    double degrees_north = s1.magnetic_heading * (180 / Math.PI);
 
                     displayText("Title: " + s1.title);
                     displayText("Lat:   " + s1.latitude);
                     displayText("Lon:   " + s1.longitude);
                     displayText("Alt:   " + s1.altitude);
-                    // Ryan-- adding speed to display
-                    displayText("Speed: " + s1.speed); // Display speed
+                    // Ryan-- adding ground speed to display
+                    displayText("Speed: " + s1.speed);
                     // Ryan-- display time
-                    displayText("Time: " + s1.time);
+                    displayText("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    // Ryan--
+                    displayText("Magnetic heading: " + degrees_north);
                     break;
 
                 default:
