@@ -24,6 +24,20 @@ namespace Managed_Data_Request
                 Dock = DockStyle.Fill
             };
 
+            // Define X axis
+            chart.AxisX.Add(new LiveCharts.Wpf.Axis
+            {
+                Title = "Time", // X axis label
+                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+            });
+
+            // Define Y axis
+            chart.AxisY.Add(new LiveCharts.Wpf.Axis
+            {
+                Title = "Altitude (feet)", // Y axis label
+                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+            });
+
             // Add the chart to the form
             Controls.Add(chart);
 
