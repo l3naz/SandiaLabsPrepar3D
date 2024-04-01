@@ -18,14 +18,23 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
+// Gaby -- imports to use LiveCharts
+using LiveCharts;
+//using LiveCharts.Wpf;
+using LiveCharts.WinForms;
+
 // Add these two statements to all SimConnect clients
 using LockheedMartin.Prepar3D.SimConnect;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using Managed_Data_Request;
 
 namespace Managed_Dashboard
 {
     public partial class Form1 : Form
     {
+        // Gaby --
+        private ChartForm chartForm;
 
         // User-defined win32 event
         const int WM_USER_SIMCONNECT = 0x0402;
@@ -129,6 +138,7 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Title", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Latitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Longitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Altitude", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- changed from altitude to altitude above ground
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Alt Above Ground", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- on data request, we also define speed
@@ -139,10 +149,10 @@ namespace Managed_Dashboard
                 // Ryan-- get the x and y velocity
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "PLane Heading Degrees Magnetic", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 //simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "STRUCT PBH32", "Simconnect");
-                
+
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
                 // if you skip this step, you will only receive a uint in the .dwData field.
-               simconnect.RegisterDataDefineStruct<Struct1>(DEFINITIONS.Struct1);
+                simconnect.RegisterDataDefineStruct<Struct1>(DEFINITIONS.Struct1);
 
                 // catch a simobject data request
                 simconnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(simconnect_OnRecvSimobjectDataBytype);
@@ -181,12 +191,12 @@ namespace Managed_Dashboard
 
         void simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
         {
-            
+
             switch ((DATA_REQUESTS)data.dwRequestID)
             {
                 case DATA_REQUESTS.REQUEST_1:
                     Struct1 s1 = (Struct1)data.dwData[0];
-                    
+
                     // Ryan--
                     // Convert seconds to ticks (1 tick = 100 nanoseconds)
                     // Create DateTime object from ticks
@@ -207,12 +217,25 @@ namespace Managed_Dashboard
                     displayText("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
                     // Ryan--
                     displayText("Magnetic heading: " + degrees_north);
+
+                    // Send info to ChartForm
+                    // Gaby
+                    double altitude = s1.altitude;
+                    chartForm.UpdateAltitude(altitude);
                     break;
 
                 default:
                     displayText("Unknown request ID: " + data.dwRequestID);
                     break;
             }
+        }
+
+        // Method to receive altitude data from the simulation
+        // Gaby
+        private void ReceiveAltitudeData(double altitude)
+        {
+            // Update the altitude chart in the chartForm
+            chartForm.UpdateAltitude(altitude);
         }
 
         private void buttonConnect_Click(object sender, EventArgs e)
@@ -224,12 +247,15 @@ namespace Managed_Dashboard
                     // the constructor is similar to SimConnect_Open in the native API4
                     // Ryan-- change name to Managed Dashboard
                     simconnect = new SimConnect("Managed Dashboard", this.Handle, WM_USER_SIMCONNECT, null, 0);
-
+                   
                     // Ryan-- middle parameter removed
                     setButtons(false, true);
 
                     initDataRequest();
 
+                    // Gaby -- added
+                    // Once connected, create an instance of ChartForm
+                    chartForm = new ChartForm();
                 }
                 catch (COMException ex)
                 {
@@ -244,6 +270,11 @@ namespace Managed_Dashboard
                 // Ryan-- middle parameter removed
                 setButtons(true, false);
             }
+
+            
+
+            // Show the chartForm
+            chartForm.Show();
         }
 
         private void buttonDisconnect_Click(object sender, EventArgs e)
