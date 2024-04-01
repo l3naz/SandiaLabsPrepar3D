@@ -34,63 +34,46 @@ namespace Managed_Dashboard
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.buttonConnect = new System.Windows.Forms.Button();
             this.buttonDisconnect = new System.Windows.Forms.Button();
-            // Ryan-- remove request button
-            // this.buttonRequestData = new System.Windows.Forms.Button();
             this.richResponse = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buttonConnect
             // 
-            this.buttonConnect.Location = new System.Drawing.Point(16, 46);
-            this.buttonConnect.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonConnect.Location = new System.Drawing.Point(151, 20);
+            this.buttonConnect.Margin = new System.Windows.Forms.Padding(4);
             this.buttonConnect.Name = "buttonConnect";
-            this.buttonConnect.Size = new System.Drawing.Size(175, 28);
+            this.buttonConnect.Size = new System.Drawing.Size(100, 33);
             this.buttonConnect.TabIndex = 0;
-            this.buttonConnect.Text = "Connect to P3D";
+            this.buttonConnect.Text = "Connect";
             this.buttonConnect.UseVisualStyleBackColor = true;
             this.buttonConnect.Click += new System.EventHandler(this.buttonConnect_Click);
             // 
             // buttonDisconnect
             // 
-            this.buttonDisconnect.Location = new System.Drawing.Point(16, 207);
-            this.buttonDisconnect.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonDisconnect.Location = new System.Drawing.Point(307, 20);
+            this.buttonDisconnect.Margin = new System.Windows.Forms.Padding(4);
             this.buttonDisconnect.Name = "buttonDisconnect";
-            this.buttonDisconnect.Size = new System.Drawing.Size(175, 28);
+            this.buttonDisconnect.Size = new System.Drawing.Size(100, 33);
             this.buttonDisconnect.TabIndex = 1;
-            this.buttonDisconnect.Text = "Disconnect from P3D";
+            this.buttonDisconnect.Text = "Disconnect";
             this.buttonDisconnect.UseVisualStyleBackColor = true;
             this.buttonDisconnect.Click += new System.EventHandler(this.buttonDisconnect_Click);
             // 
-            // buttonRequestData
-            // 
-
-            /* Ryan-- remove the middle button (request data)
-            this.buttonRequestData.Location = new System.Drawing.Point(16, 118);
-            this.buttonRequestData.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.buttonRequestData.Name = "buttonRequestData";
-            this.buttonRequestData.Size = new System.Drawing.Size(175, 50);
-            this.buttonRequestData.TabIndex = 2;
-            this.buttonRequestData.Text = "Request User Aircraft Data";
-            this.buttonRequestData.UseVisualStyleBackColor = true;
-            this.buttonRequestData.Click += new System.EventHandler(this.RequestTimer_Tick); // Ryan-- change to timer event handler
-            */
-
-            // 
             // richResponse
             // 
-            this.richResponse.Location = new System.Drawing.Point(199, 49);
-            this.richResponse.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.richResponse.Location = new System.Drawing.Point(10, 83);
+            this.richResponse.Margin = new System.Windows.Forms.Padding(4);
             this.richResponse.Name = "richResponse";
             this.richResponse.ReadOnly = true;
-            this.richResponse.Size = new System.Drawing.Size(293, 185);
+            this.richResponse.Size = new System.Drawing.Size(544, 344);
             this.richResponse.TabIndex = 3;
             this.richResponse.Text = "";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(199, 26);
+            this.label1.Location = new System.Drawing.Point(10, 63);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(77, 16);
@@ -101,19 +84,18 @@ namespace Managed_Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(524, 260);
+            this.ClientSize = new System.Drawing.Size(570, 440);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.richResponse);
-            // Ryan-- remove request button
-            // this.Controls.Add(this.buttonRequestData);
             this.Controls.Add(this.buttonDisconnect);
             this.Controls.Add(this.buttonConnect);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
-            this.Text = "  SimConnect Managed Data Request";
+            this.Text = "  Managed Dashboard";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

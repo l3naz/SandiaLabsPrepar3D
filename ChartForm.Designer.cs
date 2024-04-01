@@ -1,4 +1,4 @@
-﻿namespace Managed_Data_Request
+﻿namespace Managed_Dashboard
 {
     partial class ChartForm
     {

@@ -138,7 +138,6 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Title", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Latitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Longitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Altitude", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- changed from altitude to altitude above ground
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Alt Above Ground", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- on data request, we also define speed
@@ -214,9 +213,9 @@ namespace Managed_Dashboard
                     // Ryan-- adding ground speed to display
                     displayText("Speed: " + s1.speed);
                     // Ryan-- display time
-                    displayText("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    displayText("Time:  " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
                     // Ryan--
-                    displayText("Magnetic heading: " + degrees_north);
+                    displayText("Deg N: " + degrees_north);
 
                     // Send info to ChartForm
                     // Gaby
@@ -256,6 +255,10 @@ namespace Managed_Dashboard
                     // Gaby -- added
                     // Once connected, create an instance of ChartForm
                     chartForm = new ChartForm();
+
+                    // Ryan-- This line should be inside the try block. Otherwise errors occur.
+                    // Show the chartForm
+                    chartForm.Show();
                 }
                 catch (COMException ex)
                 {
@@ -271,10 +274,6 @@ namespace Managed_Dashboard
                 setButtons(true, false);
             }
 
-            
-
-            // Show the chartForm
-            chartForm.Show();
         }
 
         private void buttonDisconnect_Click(object sender, EventArgs e)
@@ -322,6 +321,11 @@ namespace Managed_Dashboard
 
             // display it
             richResponse.Text = output;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
