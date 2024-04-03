@@ -27,7 +27,7 @@ using LiveCharts.WinForms;
 using LockheedMartin.Prepar3D.SimConnect;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using Managed_Data_Request;
+using Managed_Dashboard;
 
 namespace Managed_Dashboard
 {

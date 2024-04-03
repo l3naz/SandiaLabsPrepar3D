@@ -4,7 +4,7 @@ using LiveCharts;
 using LiveCharts.WinForms;
 using LiveCharts.Wpf;
 
-namespace Managed_Data_Request
+namespace Managed_Dashboard
 {
     public partial class ChartForm : Form
     {
