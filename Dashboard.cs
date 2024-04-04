@@ -40,7 +40,8 @@ namespace Managed_Dashboard
         // Add a Panel control to the form
         private Panel chartPanel;
         // Add a GroupBox to contain the chart
-        private GroupBox chartGroupBox;
+        private GroupBox altitudeGroupBox;
+        private GroupBox speedGroupBox;
 
         // User-defined win32 event
         const int WM_USER_SIMCONNECT = 0x0402;
@@ -84,17 +85,14 @@ namespace Managed_Dashboard
 
             InitializeComponent();
 
-            chartGroupBox = new GroupBox();
-            chartGroupBox.Text = "Chart";
-            chartGroupBox.Dock = DockStyle.Bottom; // Dock the GroupBox to the bottom of the form
-            chartGroupBox.Height = 300; // Set the height of the GroupBox as needed
-            Controls.Add(chartGroupBox);
-
             chartPanel = new Panel()
             {
                 Dock = DockStyle.Fill // Fill the entire form area
             };
-            chartGroupBox.Controls.Add(chartPanel);
+            Controls.Add(chartPanel);
+            // Initialize altitude and speed GroupBoxes
+            InitializeAltitudeGroupBox();
+            InitializeSpeedGroupBox();
 
             // Ryan-- remove middle button parameter
             setButtons(true, false);
@@ -106,6 +104,8 @@ namespace Managed_Dashboard
             // Initialize the chart
             InitializeAltitude();
             InitializeSpeed();
+            // Display the charts
+            DisplayCharts();
 
         }
         // Simconnect client will send a win32 message when there is 
@@ -254,6 +254,30 @@ namespace Managed_Dashboard
             }
         }
 
+        private void InitializeAltitudeGroupBox()
+        {
+            altitudeGroupBox = new GroupBox()
+            {
+                Text = "Altitude Chart",
+                Dock = DockStyle.Bottom,  // Docking to the right,
+                Height = 150
+            };
+
+            Controls.Add(altitudeGroupBox);
+        }
+
+        private void InitializeSpeedGroupBox()
+        {
+            speedGroupBox = new GroupBox()
+            {
+                Text = "Speed Chart",
+                Dock = DockStyle.Bottom,
+                Height = 150
+            };
+
+            chartPanel.Controls.Add(speedGroupBox);
+        }
+
         // Method to receive altitude data from the simulation
         // Gaby
         private void UpdateAltitude(double altitude)
@@ -365,7 +389,21 @@ namespace Managed_Dashboard
             // Refresh the chart
             speed_chart.Update();
         }
+        private void DisplayCharts()
+        {
+            // Add altitude chart to altitudeGroupBox
+            altitudeGroupBox.Controls.Add(altitude_chart);
 
+            // Add speed chart to speedGroupBox
+            speedGroupBox.Controls.Add(speed_chart);
+        }
+
+        // Method to refresh both charts
+        private void RefreshCharts()
+        {
+            altitude_chart.Update();
+            speed_chart.Update();
+        }
         private void buttonConnect_Click(object sender, EventArgs e)
         {
             if (simconnect == null)

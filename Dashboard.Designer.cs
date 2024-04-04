@@ -80,7 +80,7 @@ namespace Managed_Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(628, 526);
+            this.ClientSize = new System.Drawing.Size(966, 542);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.richResponse);
             this.Controls.Add(this.buttonDisconnect);
