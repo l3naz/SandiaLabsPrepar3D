@@ -35,7 +35,8 @@ namespace Managed_Dashboard
     public partial class Form1 : Form
     {
         // Gaby --
-        private LiveCharts.WinForms.CartesianChart chart;
+        private LiveCharts.WinForms.CartesianChart altitude_chart;
+        private LiveCharts.WinForms.CartesianChart speed_chart;
         // Add a Panel control to the form
         private Panel chartPanel;
         // Add a GroupBox to contain the chart
@@ -94,6 +95,7 @@ namespace Managed_Dashboard
                 Dock = DockStyle.Fill // Fill the entire form area
             };
             chartGroupBox.Controls.Add(chartPanel);
+
             // Ryan-- remove middle button parameter
             setButtons(true, false);
             
@@ -102,7 +104,8 @@ namespace Managed_Dashboard
             requestTimer.Tick += RequestTimer_Tick;
 
             // Initialize the chart
-            InitializeChart();
+            InitializeAltitude();
+            InitializeSpeed();
 
         }
         // Simconnect client will send a win32 message when there is 
@@ -241,8 +244,8 @@ namespace Managed_Dashboard
 
                     // Send info to ChartForm
                     // Gaby
-                    double altitude = s1.altitude;
-                    UpdateAltitude(altitude);
+                    UpdateAltitude(s1.altitude);
+                    UpdateSpeed(s1.speed);
                     break;
 
                 default:
@@ -256,7 +259,7 @@ namespace Managed_Dashboard
         private void UpdateAltitude(double altitude)
         {
             // Get the altitude series from the chart
-            var altitudeSeries = chart.Series[0] as LineSeries;
+            var altitudeSeries = altitude_chart.Series[0] as LineSeries;
 
             // Add the new altitude value to the series
             altitudeSeries.Values.Add(altitude);
@@ -268,33 +271,33 @@ namespace Managed_Dashboard
             }
 
             // Refresh the chart
-            chart.Update();
+            altitude_chart.Update();
         }
 
-        private void InitializeChart()
+        private void InitializeAltitude()
         {
             // Create a new Cartesian chart
-            chart = new LiveCharts.WinForms.CartesianChart
+            altitude_chart = new LiveCharts.WinForms.CartesianChart
             {
                 Dock = DockStyle.Fill
             };
 
             // Define X axis
-            chart.AxisX.Add(new Axis
+            altitude_chart.AxisX.Add(new Axis
             {
                 Title = "Time", // X axis label
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
             // Define Y axis
-            chart.AxisY.Add(new Axis
+            altitude_chart.AxisY.Add(new Axis
             {
                 Title = "Altitude (feet)", // Y axis label
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
             // Add the chart to the panel instead of directly to the form
-            chartPanel.Controls.Add(chart);
+            chartPanel.Controls.Add(altitude_chart);
 
             // Define a new LineSeries for altitude data
             var altitudeSeries = new LineSeries
@@ -305,7 +308,62 @@ namespace Managed_Dashboard
             };
 
             // Add the series to the chart
-            chart.Series.Add(altitudeSeries);
+            altitude_chart.Series.Add(altitudeSeries);
+        }
+
+        private void InitializeSpeed()
+        {
+            // Create a new Cartesian chart
+            speed_chart = new LiveCharts.WinForms.CartesianChart
+            {
+                Dock = DockStyle.Fill
+            };
+
+            // Define X axis
+            speed_chart.AxisX.Add(new Axis
+            {
+                Title = "Time", // X axis label
+                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+            });
+
+            // Define Y axis
+            speed_chart.AxisY.Add(new Axis
+            {
+                Title = "Speed (knots)", // Y axis label
+                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+            });
+
+            // Add the chart to the panel instead of directly to the form
+            chartPanel.Controls.Add(speed_chart);
+
+            // Define a new LineSeries for altitude data
+            var speedSeries = new LineSeries
+            {
+                Title = "Speed",
+                Values = new ChartValues<double>(), // Initialize empty chart values
+                PointGeometry = null // Hide points on the line
+            };
+
+            // Add the series to the chart
+            speed_chart.Series.Add(speedSeries);
+        }
+
+        private void UpdateSpeed(double speed)
+        {
+            // Get the altitude series from the chart
+            var speedSeries = speed_chart.Series[0] as LineSeries;
+
+            // Add the new altitude value to the series
+            speedSeries.Values.Add(speed);
+
+            // Limit the number of displayed data points (optional)
+            if (speedSeries.Values.Count > 50)
+            {
+                speedSeries.Values.RemoveAt(0);
+            }
+
+            // Refresh the chart
+            speed_chart.Update();
         }
 
         private void buttonConnect_Click(object sender, EventArgs e)
