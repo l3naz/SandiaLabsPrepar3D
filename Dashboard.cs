@@ -28,13 +28,18 @@ using LockheedMartin.Prepar3D.SimConnect;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using Managed_Dashboard;
+using LiveCharts.Wpf;
 
 namespace Managed_Dashboard
 {
     public partial class Form1 : Form
     {
         // Gaby --
-        private ChartForm chartForm;
+        private LiveCharts.WinForms.CartesianChart chart;
+        // Add a Panel control to the form
+        private Panel chartPanel;
+        // Add a GroupBox to contain the chart
+        private GroupBox chartGroupBox;
 
         // User-defined win32 event
         const int WM_USER_SIMCONNECT = 0x0402;
@@ -75,14 +80,30 @@ namespace Managed_Dashboard
 
         public Form1()
         {
+
             InitializeComponent();
 
+            chartGroupBox = new GroupBox();
+            chartGroupBox.Text = "Chart";
+            chartGroupBox.Dock = DockStyle.Bottom; // Dock the GroupBox to the bottom of the form
+            chartGroupBox.Height = 300; // Set the height of the GroupBox as needed
+            Controls.Add(chartGroupBox);
+
+            chartPanel = new Panel()
+            {
+                Dock = DockStyle.Fill // Fill the entire form area
+            };
+            chartGroupBox.Controls.Add(chartPanel);
             // Ryan-- remove middle button parameter
             setButtons(true, false);
             
             // Ryan-- Set timer interval to 1 second
             requestTimer.Interval = 1000;
             requestTimer.Tick += RequestTimer_Tick;
+
+            // Initialize the chart
+            InitializeChart();
+
         }
         // Simconnect client will send a win32 message when there is 
         // a packet to process. ReceiveMessage must be called to
@@ -138,6 +159,7 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Title", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Latitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Longitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Altitude", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- changed from altitude to altitude above ground
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Alt Above Ground", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- on data request, we also define speed
@@ -213,14 +235,14 @@ namespace Managed_Dashboard
                     // Ryan-- adding ground speed to display
                     displayText("Speed: " + s1.speed);
                     // Ryan-- display time
-                    displayText("Time:  " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    displayText("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
                     // Ryan--
-                    displayText("Deg N: " + degrees_north);
+                    displayText("Magnetic heading: " + degrees_north);
 
                     // Send info to ChartForm
                     // Gaby
                     double altitude = s1.altitude;
-                    chartForm.UpdateAltitude(altitude);
+                    UpdateAltitude(altitude);
                     break;
 
                 default:
@@ -231,10 +253,59 @@ namespace Managed_Dashboard
 
         // Method to receive altitude data from the simulation
         // Gaby
-        private void ReceiveAltitudeData(double altitude)
+        private void UpdateAltitude(double altitude)
         {
-            // Update the altitude chart in the chartForm
-            chartForm.UpdateAltitude(altitude);
+            // Get the altitude series from the chart
+            var altitudeSeries = chart.Series[0] as LineSeries;
+
+            // Add the new altitude value to the series
+            altitudeSeries.Values.Add(altitude);
+
+            // Limit the number of displayed data points (optional)
+            if (altitudeSeries.Values.Count > 50)
+            {
+                altitudeSeries.Values.RemoveAt(0);
+            }
+
+            // Refresh the chart
+            chart.Update();
+        }
+
+        private void InitializeChart()
+        {
+            // Create a new Cartesian chart
+            chart = new LiveCharts.WinForms.CartesianChart
+            {
+                Dock = DockStyle.Fill
+            };
+
+            // Define X axis
+            chart.AxisX.Add(new Axis
+            {
+                Title = "Time", // X axis label
+                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+            });
+
+            // Define Y axis
+            chart.AxisY.Add(new Axis
+            {
+                Title = "Altitude (feet)", // Y axis label
+                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+            });
+
+            // Add the chart to the panel instead of directly to the form
+            chartPanel.Controls.Add(chart);
+
+            // Define a new LineSeries for altitude data
+            var altitudeSeries = new LineSeries
+            {
+                Title = "Altitude",
+                Values = new ChartValues<double>(), // Initialize empty chart values
+                PointGeometry = null // Hide points on the line
+            };
+
+            // Add the series to the chart
+            chart.Series.Add(altitudeSeries);
         }
 
         private void buttonConnect_Click(object sender, EventArgs e)
@@ -251,14 +322,6 @@ namespace Managed_Dashboard
                     setButtons(false, true);
 
                     initDataRequest();
-
-                    // Gaby -- added
-                    // Once connected, create an instance of ChartForm
-                    chartForm = new ChartForm();
-
-                    // Ryan-- This line should be inside the try block. Otherwise errors occur.
-                    // Show the chartForm
-                    chartForm.Show();
                 }
                 catch (COMException ex)
                 {
@@ -273,7 +336,6 @@ namespace Managed_Dashboard
                 // Ryan-- middle parameter removed
                 setButtons(true, false);
             }
-
         }
 
         private void buttonDisconnect_Click(object sender, EventArgs e)
@@ -321,11 +383,6 @@ namespace Managed_Dashboard
 
             // display it
             richResponse.Text = output;
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -40,62 +40,56 @@ namespace Managed_Dashboard
             // 
             // buttonConnect
             // 
-            this.buttonConnect.Location = new System.Drawing.Point(151, 20);
-            this.buttonConnect.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonConnect.Location = new System.Drawing.Point(12, 37);
             this.buttonConnect.Name = "buttonConnect";
-            this.buttonConnect.Size = new System.Drawing.Size(100, 33);
+            this.buttonConnect.Size = new System.Drawing.Size(131, 23);
             this.buttonConnect.TabIndex = 0;
-            this.buttonConnect.Text = "Connect";
+            this.buttonConnect.Text = "Connect to P3D";
             this.buttonConnect.UseVisualStyleBackColor = true;
             this.buttonConnect.Click += new System.EventHandler(this.buttonConnect_Click);
             // 
             // buttonDisconnect
             // 
-            this.buttonDisconnect.Location = new System.Drawing.Point(307, 20);
-            this.buttonDisconnect.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonDisconnect.Location = new System.Drawing.Point(12, 168);
             this.buttonDisconnect.Name = "buttonDisconnect";
-            this.buttonDisconnect.Size = new System.Drawing.Size(100, 33);
+            this.buttonDisconnect.Size = new System.Drawing.Size(131, 23);
             this.buttonDisconnect.TabIndex = 1;
-            this.buttonDisconnect.Text = "Disconnect";
+            this.buttonDisconnect.Text = "Disconnect from P3D";
             this.buttonDisconnect.UseVisualStyleBackColor = true;
             this.buttonDisconnect.Click += new System.EventHandler(this.buttonDisconnect_Click);
             // 
             // richResponse
             // 
-            this.richResponse.Location = new System.Drawing.Point(10, 83);
-            this.richResponse.Margin = new System.Windows.Forms.Padding(4);
+            this.richResponse.Location = new System.Drawing.Point(149, 40);
             this.richResponse.Name = "richResponse";
             this.richResponse.ReadOnly = true;
-            this.richResponse.Size = new System.Drawing.Size(544, 344);
+            this.richResponse.Size = new System.Drawing.Size(221, 151);
             this.richResponse.TabIndex = 3;
             this.richResponse.Text = "";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 63);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(149, 21);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(77, 16);
+            this.label1.Size = new System.Drawing.Size(60, 13);
             this.label1.TabIndex = 4;
             this.label1.Text = "Responses";
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(570, 440);
+            this.ClientSize = new System.Drawing.Size(628, 526);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.richResponse);
             this.Controls.Add(this.buttonDisconnect);
             this.Controls.Add(this.buttonConnect);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
-            this.Text = "  Managed Dashboard";
+            this.Text = "  SimConnect Managed Data Request";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
