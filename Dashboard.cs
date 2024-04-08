@@ -43,6 +43,9 @@ namespace Managed_Dashboard
         private GroupBox altitudeGroupBox;
         private GroupBox speedGroupBox;
 
+        // Ryan--
+        private double prev_time = 0;
+
         // User-defined win32 event
         const int WM_USER_SIMCONNECT = 0x0402;
 
@@ -171,9 +174,8 @@ namespace Managed_Dashboard
                 // Ryan-- get absolute time from epoch in seconds
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Absolute Time", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- get the x and y velocity
-                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "PLane Heading Degrees Magnetic", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                //simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "STRUCT PBH32", "Simconnect");
-
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Heading Degrees True", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+       
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
                 // if you skip this step, you will only receive a uint in the .dwData field.
                 simconnect.RegisterDataDefineStruct<Struct1>(DEFINITIONS.Struct1);
@@ -242,10 +244,17 @@ namespace Managed_Dashboard
                     // Ryan--
                     displayText("Magnetic heading: " + degrees_north);
 
-                    // Send info to ChartForm
-                    // Gaby
-                    UpdateAltitude(s1.altitude);
-                    UpdateSpeed(s1.speed);
+                    // Ryan--
+                    // Only update charts if the time has updated.
+                    // Time will not update if simulation is paused.
+                    if (prev_time != s1.time)
+                    {
+                        // Send info to ChartForm
+                        // Gaby
+                        UpdateAltitude(s1.altitude);
+                        UpdateSpeed(s1.speed);
+                        prev_time = s1.time;
+                    }
                     break;
 
                 default:
