@@ -145,7 +145,8 @@ namespace Managed_Dashboard
                 // Dispose serves the same purpose as SimConnect_Close()
                 simconnect.Dispose();
                 simconnect = null;
-                displayText("Connection closed");
+                // Ryan--
+                Console.WriteLine("Connection closed");
             }
         }
 
@@ -185,13 +186,15 @@ namespace Managed_Dashboard
             }
             catch (COMException ex)
             {
-                displayText(ex.Message);
+                // Ryan--
+                Console.WriteLine(ex.Message);
             }
         }
 
         void simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
-            displayText("Connected to Prepar3D");
+            // Ryan--
+            Console.WriteLine("Connected to Prepar3D");
 
             // Ryan-- Start the timer when connected
             requestTimer.Start();
@@ -200,13 +203,15 @@ namespace Managed_Dashboard
         // The case where the user closes Prepar3D
         void simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
-            displayText("Prepar3D has exited");
+            // Ryan--
+            Console.WriteLine("Prepar3D has exited");
             closeConnection();
         }
 
         void simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
         {
-            displayText("Exception received: " + data.dwException);
+            // Ryan--
+            Console.WriteLine("Exception received: " + data.dwException);
         }
 
         // The case where the user closes the client
@@ -232,7 +237,7 @@ namespace Managed_Dashboard
                     // Ryan--
                     // Convert radians to degrees
                     double degrees_north = s1.magnetic_heading * (180 / Math.PI);
-
+                    /*
                     displayText("Title: " + s1.title);
                     displayText("Lat:   " + s1.latitude);
                     displayText("Lon:   " + s1.longitude);
@@ -243,7 +248,7 @@ namespace Managed_Dashboard
                     displayText("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
                     // Ryan--
                     displayText("Magnetic heading: " + degrees_north);
-
+                    */
                     // Ryan--
                     // Only update charts if the time has updated.
                     // Time will not update if simulation is paused.
@@ -258,7 +263,7 @@ namespace Managed_Dashboard
                     break;
 
                 default:
-                    displayText("Unknown request ID: " + data.dwRequestID);
+                    Console.WriteLine("Unknown request ID: " + data.dwRequestID);
                     break;
             }
         }
@@ -268,11 +273,12 @@ namespace Managed_Dashboard
             altitudeGroupBox = new GroupBox()
             {
                 Text = "Altitude Chart",
-                Dock = DockStyle.Bottom,  // Docking to the right,
-                Height = 150
-            };
+                Location = new System.Drawing.Point(10, 70),
+                Size = new System.Drawing.Size(500, 350),
 
-            Controls.Add(altitudeGroupBox);
+        };
+
+            chartPanel.Controls.Add(altitudeGroupBox);
         }
 
         private void InitializeSpeedGroupBox()
@@ -280,8 +286,8 @@ namespace Managed_Dashboard
             speedGroupBox = new GroupBox()
             {
                 Text = "Speed Chart",
-                Dock = DockStyle.Bottom,
-                Height = 150
+                Location = new System.Drawing.Point(10, 430),
+                Size = new System.Drawing.Size(500, 350),
             };
 
             chartPanel.Controls.Add(speedGroupBox);
@@ -430,12 +436,14 @@ namespace Managed_Dashboard
                 }
                 catch (COMException ex)
                 {
-                    displayText("Unable to connect to Prepar3D:\n\n" + ex.Message);
+                    // Ryan--
+                    Console.WriteLine("Unable to connect to Prepar3D:\n\n" + ex.Message);
                 }
             }
             else
             {
-                displayText("Error - try again");
+                // Ryan--
+                Console.WriteLine("Error - try again");
                 closeConnection();
 
                 // Ryan-- middle parameter removed
@@ -468,16 +476,19 @@ namespace Managed_Dashboard
             if (simconnect != null)
             {
                 simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-                displayText("Request sent...");
+                // Ryan--
+                //displayText("Request sent...");
             }
         }
 
         // Response number
-        int response = 1;
+        // int response = 1;
 
         // Output text - display a maximum of 10 lines
         string output = "\n\n\n\n\n\n\n\n\n\n";
 
+        // Ryan--
+        /*
         void displayText(string s)
         {
             // remove first string from output
@@ -489,6 +500,6 @@ namespace Managed_Dashboard
             // display it
             richResponse.Text = output;
         }
+        */
     }
 }
-// End of sample
