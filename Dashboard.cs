@@ -17,6 +17,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 // Gaby -- imports to use LiveCharts
 using LiveCharts;
@@ -146,7 +147,7 @@ namespace Managed_Dashboard
                 simconnect.Dispose();
                 simconnect = null;
                 // Ryan--
-                Console.WriteLine("Connection closed");
+                Debug.WriteLine("Connection closed");
             }
         }
 
@@ -187,14 +188,14 @@ namespace Managed_Dashboard
             catch (COMException ex)
             {
                 // Ryan--
-                Console.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
             }
         }
 
         void simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
             // Ryan--
-            Console.WriteLine("Connected to Prepar3D");
+            Debug.WriteLine("Connected to Prepar3D");
 
             // Ryan-- Start the timer when connected
             requestTimer.Start();
@@ -204,14 +205,14 @@ namespace Managed_Dashboard
         void simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
             // Ryan--
-            Console.WriteLine("Prepar3D has exited");
+            Debug.WriteLine("Prepar3D has exited");
             closeConnection();
         }
 
         void simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
         {
             // Ryan--
-            Console.WriteLine("Exception received: " + data.dwException);
+            Debug.WriteLine("Exception received: " + data.dwException);
         }
 
         // The case where the user closes the client
@@ -237,18 +238,19 @@ namespace Managed_Dashboard
                     // Ryan--
                     // Convert radians to degrees
                     double degrees_north = s1.magnetic_heading * (180 / Math.PI);
-                    /*
-                    displayText("Title: " + s1.title);
-                    displayText("Lat:   " + s1.latitude);
-                    displayText("Lon:   " + s1.longitude);
-                    displayText("Alt:   " + s1.altitude);
-                    // Ryan-- adding ground speed to display
-                    displayText("Speed: " + s1.speed);
-                    // Ryan-- display time
-                    displayText("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    
                     // Ryan--
-                    displayText("Magnetic heading: " + degrees_north);
-                    */
+                    Debug.WriteLine("Title: " + s1.title);
+                    Debug.WriteLine("Lat:   " + s1.latitude);
+                    Debug.WriteLine("Lon:   " + s1.longitude);
+                    Debug.WriteLine("Alt:   " + s1.altitude);
+                    // Ryan-- adding ground speed to display
+                    Debug.WriteLine("Speed: " + s1.speed);
+                    // Ryan-- display time
+                    Debug.WriteLine("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    // Ryan--
+                    Debug.WriteLine("Magnetic heading: " + degrees_north);
+                    
                     // Ryan--
                     // Only update charts if the time has updated.
                     // Time will not update if simulation is paused.
@@ -263,7 +265,7 @@ namespace Managed_Dashboard
                     break;
 
                 default:
-                    Console.WriteLine("Unknown request ID: " + data.dwRequestID);
+                    Debug.WriteLine("Unknown request ID: " + data.dwRequestID);
                     break;
             }
         }
@@ -437,13 +439,13 @@ namespace Managed_Dashboard
                 catch (COMException ex)
                 {
                     // Ryan--
-                    Console.WriteLine("Unable to connect to Prepar3D:\n\n" + ex.Message);
+                    Debug.WriteLine("Unable to connect to Prepar3D:\n\n" + ex.Message);
                 }
             }
             else
             {
                 // Ryan--
-                Console.WriteLine("Error - try again");
+                Debug.WriteLine("Error - try again");
                 closeConnection();
 
                 // Ryan-- middle parameter removed
@@ -465,7 +467,7 @@ namespace Managed_Dashboard
             // simconnect.RequestDataOnSimObject(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.ONCE);
 
             simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-            displayText("Request sent...");
+            Debug.WriteLine("Request sent...");
         }
         */
 
@@ -477,7 +479,7 @@ namespace Managed_Dashboard
             {
                 simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
                 // Ryan--
-                //displayText("Request sent...");
+                Debug.WriteLine("Request sent...");
             }
         }
 
@@ -488,18 +490,7 @@ namespace Managed_Dashboard
         string output = "\n\n\n\n\n\n\n\n\n\n";
 
         // Ryan--
-        /*
-        void displayText(string s)
-        {
-            // remove first string from output
-            output = output.Substring(output.IndexOf("\n") + 1);
-
-            // add the new string
-            output += "\n" + response++ + ": " + s;
-
-            // display it
-            richResponse.Text = output;
-        }
-        */
+        // Removed the writing box in Form1 GUI.
+        // All messages are now sent to Debug.
     }
 }
