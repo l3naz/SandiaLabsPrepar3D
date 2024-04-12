@@ -54,11 +54,13 @@ namespace Managed_Dashboard
         // Gaby --
         private LiveCharts.WinForms.CartesianChart altitude_chart;
         private LiveCharts.WinForms.CartesianChart speed_chart;
+        private LiveCharts.WinForms.CartesianChart pb_chart;
         // Add a Panel control to the form
         private Panel chartPanel;
         // Add a GroupBox to contain the chart
         private GroupBox altitudeGroupBox;
         private GroupBox speedGroupBox;
+        private GroupBox pbGroupBox;
 
         // Ryan--
         private double prev_time = 0;
@@ -98,6 +100,9 @@ namespace Managed_Dashboard
             public double time;
             // Ryan--
             public double magnetic_heading;
+            // Ryan--
+            public double pitch;
+            public double bank;
         };
 
         public Form1()
@@ -111,8 +116,7 @@ namespace Managed_Dashboard
             };
             Controls.Add(chartPanel);
             // Initialize altitude and speed GroupBoxes
-            InitializeAltitudeGroupBox();
-            InitializeSpeedGroupBox();
+            InitializeAllGroupBox();
 
             // Ryan-- remove middle button parameter
             setButtons(true, false);
@@ -124,8 +128,10 @@ namespace Managed_Dashboard
             // Initialize the chart
             InitializeAltitude();
             InitializeSpeed();
+            Initializepb();
             altitudeGroupBox.Controls.Add(altitude_chart);
             speedGroupBox.Controls.Add(speed_chart);
+            pbGroupBox.Controls.Add(pb_chart);
 
         }
         // Simconnect client will send a win32 message when there is 
@@ -193,7 +199,9 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Absolute Time", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- get the x and y velocity
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Heading Degrees True", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-       
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Pitch Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Bank Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
                 // if you skip this step, you will only receive a uint in the .dwData field.
                 simconnect.RegisterDataDefineStruct<Struct1>(DEFINITIONS.Struct1);
@@ -253,7 +261,9 @@ namespace Managed_Dashboard
 
                     // Ryan--
                     // Convert radians to degrees
-                    double degrees_north = s1.magnetic_heading * (180 / Math.PI);
+                    double heading_degrees = s1.magnetic_heading * (180 / Math.PI);
+                    double pitch_degrees = s1.pitch * (180 / Math.PI);
+                    double bank_degrees = s1.bank * (180 / Math.PI);
 
                     // Ryan--
                     // Only update charts if the time has updated.
@@ -269,13 +279,19 @@ namespace Managed_Dashboard
                         Debug.WriteLine("Speed: " + s1.speed);
                         // Ryan-- display time
                         Debug.WriteLine("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                        // Ryan--
-                        Debug.WriteLine("Magnetic heading: " + degrees_north);
+                        // Ryan-- magnetic heading
+                        Debug.WriteLine("Magnetic heading: " + s1.magnetic_heading);
+                        // Ryan-- current pitch, bank, heading
+                        Debug.WriteLine("Pitch: " + s1.pitch);
+                        Debug.WriteLine("Bank: " + s1.bank);
 
                         // Send info to ChartForm
                         // Gaby
                         altitude_chart.Series[0].Values.Add(s1.altitude);
                         speed_chart.Series[0].Values.Add(s1.speed);
+                        pb_chart.Series[0].Values.Add(s1.pitch);
+                        pb_chart.Series[1].Values.Add(s1.bank);
+                        //pb_chart.Series[2].Values.Add(s1.magnetic_heading);
                         prev_time = s1.time;
                     }
                     break;
@@ -286,8 +302,9 @@ namespace Managed_Dashboard
             }
         }
 
-        private void InitializeAltitudeGroupBox()
+        private void InitializeAllGroupBox()
         {
+            // altitude group box
             altitudeGroupBox = new GroupBox()
             {
                 Text = "Altitude Chart",
@@ -297,10 +314,8 @@ namespace Managed_Dashboard
             };
 
             chartPanel.Controls.Add(altitudeGroupBox);
-        }
 
-        private void InitializeSpeedGroupBox()
-        {
+            // speed group box
             speedGroupBox = new GroupBox()
             {
                 Text = "Speed Chart",
@@ -309,6 +324,17 @@ namespace Managed_Dashboard
             };
 
             chartPanel.Controls.Add(speedGroupBox);
+
+            // pitch, bank heading group box
+            pbGroupBox = new GroupBox()
+            {
+                Text = "Pitch, Bank",
+                Location = new System.Drawing.Point(520, 430),
+                Size = new System.Drawing.Size(500, 350),
+
+            };
+
+            chartPanel.Controls.Add(pbGroupBox);
         }
 
         private void InitializeAltitude()
@@ -377,6 +403,57 @@ namespace Managed_Dashboard
 
             // Add the series to the chart
             speed_chart.Series.Add(speedSeries);
+        }
+
+        private void Initializepb()
+        {
+            // Create a new Cartesian chart
+            pb_chart = new LiveCharts.WinForms.CartesianChart
+            {
+                Dock = DockStyle.Fill
+            };
+
+            // Define X axis
+            pb_chart.AxisX.Add(new Axis
+            {
+                Title = "Time (seconds)", // X axis label
+                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+            });
+
+            // Define Y axis
+            pb_chart.AxisY.Add(new Axis
+            {
+                Title = "Radians", // Y axis label
+                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+            });
+
+            // Define a new LineSeries for altitude data
+            var pitchSeries = new LineSeries
+            {
+                Title = "Pitch",
+                Values = new ChartValues<double>(), // Initialize empty chart values
+                PointGeometry = null // Hide points on the line
+            };
+
+            var bankSeries = new LineSeries
+            {
+                Title = "Bank",
+                Values = new ChartValues<double>(), // Initialize empty chart values
+                PointGeometry = null // Hide points on the line
+            };
+
+            /*
+            var headingSeries = new LineSeries
+            {
+                Title = "Heading",
+                Values = new ChartValues<double>(), // Initialize empty chart values
+                PointGeometry = null // Hide points on the line
+            };
+            */
+            // Add the series to the chart
+            pb_chart.Series.Add(pitchSeries);
+            pb_chart.Series.Add(bankSeries);
+            //pb_chart.Series.Add(headingSeries);
         }
         private void buttonConnect_Click(object sender, EventArgs e)
         {
