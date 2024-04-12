@@ -349,14 +349,14 @@ namespace Managed_Dashboard
             altitude_chart.AxisX.Add(new Axis
             {
                 Title = "Time (seconds)", // X axis label
-                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+                LabelFormatter = value => value.ToString("N4"), // Optional formatting for axis labels
             });
 
             // Define Y axis
             altitude_chart.AxisY.Add(new Axis
             {
                 Title = "Altitude (feet)", // Y axis label
-                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+                LabelFormatter = value => value.ToString("N4"), // Optional formatting for axis labels
             });
 
             // Define a new LineSeries for altitude data
@@ -383,14 +383,14 @@ namespace Managed_Dashboard
             speed_chart.AxisX.Add(new Axis
             {
                 Title = "Time (seconds)", // X axis label
-                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+                LabelFormatter = value => value.ToString("N4"), // Optional formatting for axis labels
             });
 
             // Define Y axis
             speed_chart.AxisY.Add(new Axis
             {
                 Title = "Speed (knots)", // Y axis label
-                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+                LabelFormatter = value => value.ToString("N4"), // Optional formatting for axis labels
             });
 
             // Define a new LineSeries for altitude data
@@ -417,14 +417,14 @@ namespace Managed_Dashboard
             pb_chart.AxisX.Add(new Axis
             {
                 Title = "Time (seconds)", // X axis label
-                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+                LabelFormatter = value => value.ToString("N4"), // Optional formatting for axis labels
             });
 
             // Define Y axis
             pb_chart.AxisY.Add(new Axis
             {
                 Title = "Radians", // Y axis label
-                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
+                LabelFormatter = value => value.ToString("N4"), // Optional formatting for axis labels
             });
 
             // Define a new LineSeries for altitude data
@@ -451,6 +451,10 @@ namespace Managed_Dashboard
             };
             */
             // Add the series to the chart
+            pb_chart.LegendLocation = LegendLocation.Bottom; // Change this to control legend location
+            //pb_chart.DefaultLegend = ; // Change this to control legend visibility
+
+
             pb_chart.Series.Add(pitchSeries);
             pb_chart.Series.Add(bankSeries);
             //pb_chart.Series.Add(headingSeries);
@@ -489,6 +493,12 @@ namespace Managed_Dashboard
 
         private void buttonDisconnect_Click(object sender, EventArgs e)
         {
+            // clear all the current values from the graphs
+            altitude_chart.Series[0].Values.Clear();
+            speed_chart.Series[0].Values.Clear();
+            pb_chart.Series[0].Values.Clear();
+            pb_chart.Series[1].Values.Clear();
+
             closeConnection();
             // Ryan-- middle parameter removed
             setButtons(true, false);
