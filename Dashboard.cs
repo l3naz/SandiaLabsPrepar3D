@@ -24,17 +24,33 @@ using LiveCharts;
 //using LiveCharts.Wpf;
 using LiveCharts.WinForms;
 
+// Ryan-- Livecharts2
+/*
+using System.Linq;
+//using CommunityToolkit.Mvvm.Input;
+using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.Kernel.Events;
+using LiveChartsCore.Kernel.Sketches;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Drawing;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
+*/
+
 // Add these two statements to all SimConnect clients
 using LockheedMartin.Prepar3D.SimConnect;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using Managed_Dashboard;
 using LiveCharts.Wpf;
+using System.Collections.ObjectModel;
 
 namespace Managed_Dashboard
 {
     public partial class Form1 : Form
     {
+
         // Gaby --
         private LiveCharts.WinForms.CartesianChart altitude_chart;
         private LiveCharts.WinForms.CartesianChart speed_chart;
@@ -108,8 +124,8 @@ namespace Managed_Dashboard
             // Initialize the chart
             InitializeAltitude();
             InitializeSpeed();
-            // Display the charts
-            DisplayCharts();
+            altitudeGroupBox.Controls.Add(altitude_chart);
+            speedGroupBox.Controls.Add(speed_chart);
 
         }
         // Simconnect client will send a win32 message when there is 
@@ -238,28 +254,28 @@ namespace Managed_Dashboard
                     // Ryan--
                     // Convert radians to degrees
                     double degrees_north = s1.magnetic_heading * (180 / Math.PI);
-                    
-                    // Ryan--
-                    Debug.WriteLine("Title: " + s1.title);
-                    Debug.WriteLine("Lat:   " + s1.latitude);
-                    Debug.WriteLine("Lon:   " + s1.longitude);
-                    Debug.WriteLine("Alt:   " + s1.altitude);
-                    // Ryan-- adding ground speed to display
-                    Debug.WriteLine("Speed: " + s1.speed);
-                    // Ryan-- display time
-                    Debug.WriteLine("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                    // Ryan--
-                    Debug.WriteLine("Magnetic heading: " + degrees_north);
-                    
+
                     // Ryan--
                     // Only update charts if the time has updated.
                     // Time will not update if simulation is paused.
                     if (prev_time != s1.time)
                     {
+                        // Ryan--
+                        Debug.WriteLine("Title: " + s1.title);
+                        Debug.WriteLine("Lat:   " + s1.latitude);
+                        Debug.WriteLine("Lon:   " + s1.longitude);
+                        Debug.WriteLine("Alt:   " + s1.altitude);
+                        // Ryan-- adding ground speed to display
+                        Debug.WriteLine("Speed: " + s1.speed);
+                        // Ryan-- display time
+                        Debug.WriteLine("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                        // Ryan--
+                        Debug.WriteLine("Magnetic heading: " + degrees_north);
+
                         // Send info to ChartForm
                         // Gaby
-                        UpdateAltitude(s1.altitude);
-                        UpdateSpeed(s1.speed);
+                        altitude_chart.Series[0].Values.Add(s1.altitude);
+                        speed_chart.Series[0].Values.Add(s1.speed);
                         prev_time = s1.time;
                     }
                     break;
@@ -278,7 +294,7 @@ namespace Managed_Dashboard
                 Location = new System.Drawing.Point(10, 70),
                 Size = new System.Drawing.Size(500, 350),
 
-        };
+            };
 
             chartPanel.Controls.Add(altitudeGroupBox);
         }
@@ -295,26 +311,6 @@ namespace Managed_Dashboard
             chartPanel.Controls.Add(speedGroupBox);
         }
 
-        // Method to receive altitude data from the simulation
-        // Gaby
-        private void UpdateAltitude(double altitude)
-        {
-            // Get the altitude series from the chart
-            var altitudeSeries = altitude_chart.Series[0] as LineSeries;
-
-            // Add the new altitude value to the series
-            altitudeSeries.Values.Add(altitude);
-
-            // Limit the number of displayed data points (optional)
-            if (altitudeSeries.Values.Count > 50)
-            {
-                altitudeSeries.Values.RemoveAt(0);
-            }
-
-            // Refresh the chart
-            altitude_chart.Update();
-        }
-
         private void InitializeAltitude()
         {
             // Create a new Cartesian chart
@@ -326,7 +322,7 @@ namespace Managed_Dashboard
             // Define X axis
             altitude_chart.AxisX.Add(new Axis
             {
-                Title = "Time", // X axis label
+                Title = "Time (seconds)", // X axis label
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
@@ -336,9 +332,6 @@ namespace Managed_Dashboard
                 Title = "Altitude (feet)", // Y axis label
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
-
-            // Add the chart to the panel instead of directly to the form
-            chartPanel.Controls.Add(altitude_chart);
 
             // Define a new LineSeries for altitude data
             var altitudeSeries = new LineSeries
@@ -363,7 +356,7 @@ namespace Managed_Dashboard
             // Define X axis
             speed_chart.AxisX.Add(new Axis
             {
-                Title = "Time", // X axis label
+                Title = "Time (seconds)", // X axis label
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
@@ -373,9 +366,6 @@ namespace Managed_Dashboard
                 Title = "Speed (knots)", // Y axis label
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
-
-            // Add the chart to the panel instead of directly to the form
-            chartPanel.Controls.Add(speed_chart);
 
             // Define a new LineSeries for altitude data
             var speedSeries = new LineSeries
@@ -387,39 +377,6 @@ namespace Managed_Dashboard
 
             // Add the series to the chart
             speed_chart.Series.Add(speedSeries);
-        }
-
-        private void UpdateSpeed(double speed)
-        {
-            // Get the altitude series from the chart
-            var speedSeries = speed_chart.Series[0] as LineSeries;
-
-            // Add the new altitude value to the series
-            speedSeries.Values.Add(speed);
-
-            // Limit the number of displayed data points (optional)
-            if (speedSeries.Values.Count > 50)
-            {
-                speedSeries.Values.RemoveAt(0);
-            }
-
-            // Refresh the chart
-            speed_chart.Update();
-        }
-        private void DisplayCharts()
-        {
-            // Add altitude chart to altitudeGroupBox
-            altitudeGroupBox.Controls.Add(altitude_chart);
-
-            // Add speed chart to speedGroupBox
-            speedGroupBox.Controls.Add(speed_chart);
-        }
-
-        // Method to refresh both charts
-        private void RefreshCharts()
-        {
-            altitude_chart.Update();
-            speed_chart.Update();
         }
         private void buttonConnect_Click(object sender, EventArgs e)
         {
@@ -460,17 +417,6 @@ namespace Managed_Dashboard
             setButtons(true, false);
         }
 
-        /* Ryan-- comment out old button request
-        private void buttonRequestData_Click(object sender, EventArgs e)
-        {
-            // The following call returns identical information to:
-            // simconnect.RequestDataOnSimObject(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.ONCE);
-
-            simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-            Debug.WriteLine("Request sent...");
-        }
-        */
-
         // Ryan-- new request event handler
         private void RequestTimer_Tick(object sender, EventArgs e)
         {
@@ -482,15 +428,6 @@ namespace Managed_Dashboard
                 Debug.WriteLine("Request sent...");
             }
         }
-
-        // Response number
-        // int response = 1;
-
-        // Output text - display a maximum of 10 lines
-        string output = "\n\n\n\n\n\n\n\n\n\n";
-
-        // Ryan--
-        // Removed the writing box in Form1 GUI.
-        // All messages are now sent to Debug.
+    
     }
 }
