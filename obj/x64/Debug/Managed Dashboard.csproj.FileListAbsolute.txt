@@ -29,3 +29,11 @@ C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\Output\Debug\SimCon
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\x86\libSkiaSharp.dll
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\x64\libSkiaSharp.dll
 C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\arm64\libSkiaSharp.dll
+E:\Program Files\Lockheed Martin\Prepar3D_v5_Academic_5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\libHarfBuzzSharp.dylib
+E:\Program Files\Lockheed Martin\Prepar3D_v5_Academic_5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\x86\libHarfBuzzSharp.dll
+E:\Program Files\Lockheed Martin\Prepar3D_v5_Academic_5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\x64\libHarfBuzzSharp.dll
+E:\Program Files\Lockheed Martin\Prepar3D_v5_Academic_5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\arm64\libHarfBuzzSharp.dll
+E:\Program Files\Lockheed Martin\Prepar3D_v5_Academic_5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\libSkiaSharp.dylib
+E:\Program Files\Lockheed Martin\Prepar3D_v5_Academic_5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\x86\libSkiaSharp.dll
+E:\Program Files\Lockheed Martin\Prepar3D_v5_Academic_5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\x64\libSkiaSharp.dll
+E:\Program Files\Lockheed Martin\Prepar3D_v5_Academic_5.4.9.28482\Output\Debug\SimConnect Samples\Managed Data Request\arm64\libSkiaSharp.dll

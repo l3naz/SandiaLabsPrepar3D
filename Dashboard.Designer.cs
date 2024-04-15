@@ -39,9 +39,9 @@ namespace Managed_Dashboard
             // buttonConnect
             // 
             this.buttonConnect.Location = new System.Drawing.Point(10, 10);
-            this.buttonConnect.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonConnect.Margin = new System.Windows.Forms.Padding(4);
             this.buttonConnect.Name = "buttonConnect";
-            this.buttonConnect.Size = new System.Drawing.Size(150, 50);
+            this.buttonConnect.Size = new System.Drawing.Size(150, 38);
             this.buttonConnect.TabIndex = 0;
             this.buttonConnect.Text = "Connect to P3D";
             this.buttonConnect.UseVisualStyleBackColor = true;
@@ -50,9 +50,9 @@ namespace Managed_Dashboard
             // buttonDisconnect
             // 
             this.buttonDisconnect.Location = new System.Drawing.Point(170, 10);
-            this.buttonDisconnect.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonDisconnect.Margin = new System.Windows.Forms.Padding(4);
             this.buttonDisconnect.Name = "buttonDisconnect";
-            this.buttonDisconnect.Size = new System.Drawing.Size(150, 50);
+            this.buttonDisconnect.Size = new System.Drawing.Size(150, 38);
             this.buttonDisconnect.TabIndex = 1;
             this.buttonDisconnect.Text = "Disconnect from P3D";
             this.buttonDisconnect.UseVisualStyleBackColor = true;
@@ -60,14 +60,14 @@ namespace Managed_Dashboard
             // 
             // Form1
             // 
-            //this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1030, 800);
             this.Controls.Add(this.buttonDisconnect);
             this.Controls.Add(this.buttonConnect);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Managed Dashboard";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
