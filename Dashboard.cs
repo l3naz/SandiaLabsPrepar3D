@@ -65,9 +65,7 @@ namespace Managed_Dashboard
         //Gaby -- 
         // Add a control to switch between live and playback modes
         private CheckBox liveModeCheckBox;
-        // Add a control for playback navigation (if in playback mode)
-        private TrackBar playbackTrackBar;
-        private Button playButton, pauseButton;
+
 
         // Ryan--
         private double prev_time = 0;
@@ -127,7 +125,6 @@ namespace Managed_Dashboard
             liveModeCheckBox.CheckedChanged += LiveModeCheckBox_CheckedChanged;
             Controls.Add(liveModeCheckBox);
 
-            InitializePlaybackControls();
             UpdateControlVisibility();
 
             chartPanel = new Panel()
@@ -274,43 +271,12 @@ namespace Managed_Dashboard
             }
         }
 
-        // Gaby
-        private void InitializePlaybackControls()
-        {
-            playbackTrackBar = new TrackBar
-            {
-                Minimum = 0,
-                Maximum = 100,  // Example max value, set based on data length
-                TickStyle = TickStyle.BottomRight,
-                Location = new Point(10, 40),
-                Size = new Size(200, 30)
-            };
-            Controls.Add(playbackTrackBar);
-
-            playButton = new Button { Text = "Play", Location = new Point(220, 40) };
-            pauseButton = new Button { Text = "Pause", Location = new Point(300, 40) };
-            playButton.Click += PlayButton_Click;
-            pauseButton.Click += PauseButton_Click;
-            Controls.Add(playButton);
-            Controls.Add(pauseButton);
-        }
+ 
         private void UpdateControlVisibility()
         {
             bool isLiveMode = liveModeCheckBox.Checked;
-            playbackTrackBar.Visible = !isLiveMode;
-            playButton.Visible = !isLiveMode;
-            pauseButton.Visible = !isLiveMode;
         }
 
-        private void PlayButton_Click(object sender, EventArgs e)
-        {
-            // Logic to start playback
-        }
-
-        private void PauseButton_Click(object sender, EventArgs e)
-        {
-            // Logic to pause playback
-        }
 
 
         // The case where the user closes the client
