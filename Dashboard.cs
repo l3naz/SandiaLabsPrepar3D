@@ -66,6 +66,14 @@ namespace Managed_Dashboard
         // Add a control to switch between live and playback modes
         private CheckBox liveModeCheckBox;
 
+        private TextBox timeTextBox;
+        private TextBox latitudeTextBox;
+        private TextBox longitudeTextBox;
+        private Label timeLabel;
+        private Label latitudeLabel;
+        private Label longitudeLabel;
+
+
 
         // Ryan--
         private double prev_time = 0;
@@ -110,17 +118,72 @@ namespace Managed_Dashboard
             public double bank;
         };
 
+        private void InitializeTextBoxes()
+        {
+            // Initialize Labels
+            timeLabel = new Label
+            {
+                Text = "Time:",
+                Location = new Point(450, 15),
+                Size = new Size(100, 20)
+            };
+            Controls.Add(timeLabel);
+
+            timeTextBox = new TextBox
+            {
+                Location = new Point(450, 30),
+                Size = new Size(150, 20),
+                ReadOnly = true
+            };
+            Controls.Add(timeTextBox);
+
+            // Latitude
+            latitudeLabel = new Label
+            {
+                Text = "Latitude:",
+                Location = new Point(620, 15),
+                Size = new Size(100, 20)
+            };
+            Controls.Add(latitudeLabel);
+
+            latitudeTextBox = new TextBox
+            {
+                Location = new Point(620, 30),
+                Size = new Size(150, 20),
+                ReadOnly = true
+            };
+            Controls.Add(latitudeTextBox);
+
+            // Longitude
+            longitudeLabel = new Label
+            {
+                Text = "Longitude:",
+                Location = new Point(790, 15),
+                Size = new Size(100, 20)
+            };
+            Controls.Add(longitudeLabel);
+
+            longitudeTextBox = new TextBox
+            {
+                Location = new Point(790, 30),
+                Size = new Size(150, 20),
+                ReadOnly = true
+            };
+            Controls.Add(longitudeTextBox);
+        }
+
         public Form1()
         {
 
             InitializeComponent();
+            InitializeTextBoxes();
 
             // Gaby -- 
             liveModeCheckBox = new CheckBox
             {
                 Text = "Live Mode",
                 Checked = true,
-                Location = new Point(450, 10)
+                Location = new Point(340, 10)
             };
             liveModeCheckBox.CheckedChanged += LiveModeCheckBox_CheckedChanged;
             Controls.Add(liveModeCheckBox);
@@ -331,6 +394,10 @@ namespace Managed_Dashboard
                         speed_chart.Series[0].Values.Add(s1.speed);
                         pb_chart.Series[0].Values.Add(s1.pitch);
                         pb_chart.Series[1].Values.Add(s1.bank);
+                        // Update text boxes with new data
+                        timeTextBox.Text = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
+                        latitudeTextBox.Text = s1.latitude.ToString("F6");
+                        longitudeTextBox.Text = s1.longitude.ToString("F6");
                         prev_time = s1.time;
                     }
                     break;
