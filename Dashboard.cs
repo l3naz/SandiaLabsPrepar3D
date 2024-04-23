@@ -66,9 +66,9 @@ namespace Managed_Dashboard
         // Add a control to switch between live and playback modes
         private CheckBox liveModeCheckBox;
 
-        private TextBox timeTextBox;
-        private TextBox latitudeTextBox;
-        private TextBox longitudeTextBox;
+        private Label timeTextBox;
+        private Label latitudeTextBox;
+        private Label longitudeTextBox;
         private Label timeLabel;
         private Label latitudeLabel;
         private Label longitudeLabel;
@@ -124,16 +124,16 @@ namespace Managed_Dashboard
             timeLabel = new Label
             {
                 Text = "Time:",
-                Location = new Point(450, 15),
+                Location = new Point(450, 12),
                 Size = new Size(100, 20)
             };
             Controls.Add(timeLabel);
 
-            timeTextBox = new TextBox
+            timeTextBox = new Label
             {
                 Location = new Point(450, 30),
-                Size = new Size(150, 20),
-                ReadOnly = true
+                Size = new Size(150, 20)
+                //ReadOnly = true
             };
             Controls.Add(timeTextBox);
 
@@ -141,16 +141,16 @@ namespace Managed_Dashboard
             latitudeLabel = new Label
             {
                 Text = "Latitude:",
-                Location = new Point(620, 15),
+                Location = new Point(620, 12),
                 Size = new Size(100, 20)
             };
             Controls.Add(latitudeLabel);
 
-            latitudeTextBox = new TextBox
+            latitudeTextBox = new Label
             {
                 Location = new Point(620, 30),
-                Size = new Size(150, 20),
-                ReadOnly = true
+                Size = new Size(150, 20)
+                //ReadOnly = true
             };
             Controls.Add(latitudeTextBox);
 
@@ -158,16 +158,16 @@ namespace Managed_Dashboard
             longitudeLabel = new Label
             {
                 Text = "Longitude:",
-                Location = new Point(790, 15),
+                Location = new Point(790, 12),
                 Size = new Size(100, 20)
             };
             Controls.Add(longitudeLabel);
 
-            longitudeTextBox = new TextBox
+            longitudeTextBox = new Label
             {
                 Location = new Point(790, 30),
-                Size = new Size(150, 20),
-                ReadOnly = true
+                Size = new Size(150, 20)
+                //ReadOnly = true
             };
             Controls.Add(longitudeTextBox);
         }
@@ -395,7 +395,7 @@ namespace Managed_Dashboard
                         pb_chart.Series[0].Values.Add(s1.pitch);
                         pb_chart.Series[1].Values.Add(s1.bank);
                         // Update text boxes with new data
-                        timeTextBox.Text = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
+                        timeTextBox.Text = dateTime.ToString("HH:mm:ss");
                         latitudeTextBox.Text = s1.latitude.ToString("F6");
                         longitudeTextBox.Text = s1.longitude.ToString("F6");
                         prev_time = s1.time;
