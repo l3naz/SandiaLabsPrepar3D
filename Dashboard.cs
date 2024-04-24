@@ -62,9 +62,6 @@ namespace Managed_Dashboard
         private GroupBox speedGroupBox;
         private GroupBox pbGroupBox;
 
-        //Gaby -- 
-        // Add a control to switch between live and playback modes
-        private CheckBox liveModeCheckBox;
 
         private Label timeTextBox;
         private Label latitudeTextBox;
@@ -177,18 +174,6 @@ namespace Managed_Dashboard
 
             InitializeComponent();
             InitializeTextBoxes();
-
-            // Gaby -- 
-            liveModeCheckBox = new CheckBox
-            {
-                Text = "Live Mode",
-                Checked = true,
-                Location = new Point(340, 10)
-            };
-            liveModeCheckBox.CheckedChanged += LiveModeCheckBox_CheckedChanged;
-            Controls.Add(liveModeCheckBox);
-
-            UpdateControlVisibility();
 
             chartPanel = new Panel()
             {
@@ -317,27 +302,6 @@ namespace Managed_Dashboard
         {
             // Ryan--
             Debug.WriteLine("Exception received: " + data.dwException);
-        }
-        
-        // Gaby --  Check box to see if simulation is live or prerecorded
-        private void LiveModeCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateControlVisibility();
-            if (liveModeCheckBox.Checked)
-            {
-                requestTimer.Start();
-            }
-            else
-            {
-                requestTimer.Stop();
-                // Load recorded data or connect to a data source for playback
-            }
-        }
-
- 
-        private void UpdateControlVisibility()
-        {
-            bool isLiveMode = liveModeCheckBox.Checked;
         }
 
 
