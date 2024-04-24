@@ -24,6 +24,12 @@ using LiveCharts;
 //using LiveCharts.Wpf;
 using LiveCharts.WinForms;
 
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+//using CommunityToolkit.Mvvm.ComponentModel;
+using LiveChartsCore.Defaults;
+//using LiveChartsCore.SkiaSharpView.WinForms;
+
 // Ryan-- Livecharts2
 /*
 using System.Linq;
@@ -45,6 +51,7 @@ using System.Security.Cryptography;
 using Managed_Dashboard;
 using LiveCharts.Wpf;
 using System.Collections.ObjectModel;
+using LiveChartsCore.SkiaSharpView.WinForms;
 
 namespace Managed_Dashboard
 {
@@ -70,7 +77,9 @@ namespace Managed_Dashboard
         private Label latitudeLabel;
         private Label longitudeLabel;
 
-
+        private PolarChart magneticHeadingChart;
+        private GroupBox magneticHeadingGroupBox;
+        private ObservableValue headingValue = new ObservableValue(0);
 
         // Ryan--
         private double prev_time = 0;
@@ -194,9 +203,11 @@ namespace Managed_Dashboard
             InitializeAltitude();
             InitializeSpeed();
             Initializepb();
+            InitializeHeading();
             altitudeGroupBox.Controls.Add(altitude_chart);
             speedGroupBox.Controls.Add(speed_chart);
             pbGroupBox.Controls.Add(pb_chart);
+            magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
 
         }
         // Simconnect client will send a win32 message when there is 
@@ -329,6 +340,7 @@ namespace Managed_Dashboard
                     // Ryan--
                     // Convert radians to degrees
                     double heading_degrees = s1.magnetic_heading * (180 / Math.PI);
+                    UpdateMagneticHeading(heading_degrees);
                     double pitch_degrees = s1.pitch * (180 / Math.PI);
                     double bank_degrees = s1.bank * (180 / Math.PI);
 
@@ -405,6 +417,15 @@ namespace Managed_Dashboard
             };
 
             chartPanel.Controls.Add(pbGroupBox);
+
+            //heading group box
+            magneticHeadingGroupBox = new GroupBox
+            {
+                Text = "Magnetic Heading",
+                Location = new Point(520, 70),
+                Size = new Size(500, 350),
+            };
+            chartPanel.Controls.Add(magneticHeadingGroupBox);
         }
 
         private void InitializeAltitude()
@@ -416,14 +437,14 @@ namespace Managed_Dashboard
             };
             
             // Define X axis
-            altitude_chart.AxisX.Add(new Axis
+            altitude_chart.AxisX.Add(new LiveCharts.Wpf.Axis
             {
                 Title = "Time (seconds)", // X axis label
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
             // Define Y axis
-            altitude_chart.AxisY.Add(new Axis
+            altitude_chart.AxisY.Add(new LiveCharts.Wpf.Axis
             {
                 Title = "Altitude (feet)", // Y axis label
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
@@ -451,14 +472,14 @@ namespace Managed_Dashboard
             };
 
             // Define X axis
-            speed_chart.AxisX.Add(new Axis
+            speed_chart.AxisX.Add(new LiveCharts.Wpf.Axis
             {
                 Title = "Time (seconds)", // X axis label
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
             // Define Y axis
-            speed_chart.AxisY.Add(new Axis
+            speed_chart.AxisY.Add(new LiveCharts.Wpf.Axis
             {
                 Title = "Speed (knots)", // Y axis label
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
@@ -486,14 +507,14 @@ namespace Managed_Dashboard
             };
 
             // Define X axis
-            pb_chart.AxisX.Add(new Axis
+            pb_chart.AxisX.Add(new LiveCharts.Wpf.Axis
             {
                 Title = "Time (seconds)", // X axis label
                 LabelFormatter = value => value.ToString("N3"), // Optional formatting for axis labels
             });
 
             // Define Y axis
-            pb_chart.AxisY.Add(new Axis
+            pb_chart.AxisY.Add(new LiveCharts.Wpf.Axis
             {
                 Title = "Radians", // Y axis label
                 LabelFormatter = value => value.ToString("N3"), // Optional formatting for axis labels
@@ -523,6 +544,52 @@ namespace Managed_Dashboard
             pb_chart.Series.Add(bankSeries);
             //pb_chart.Series.Add(headingSeries);
         }
+
+        private void InitializeHeading()
+        {
+            Debug.WriteLine("Initializing Magnetic Heading Chart...");
+
+            var headingSeries = new PolarLineSeries<ObservablePolarPoint>
+            {
+                Values = new ObservableCollection<ObservablePolarPoint>
+                {
+                    new ObservablePolarPoint { Angle = 0, Radius = 10 },
+                    new ObservablePolarPoint { Angle = 45, Radius = 15 },
+                    new ObservablePolarPoint { Angle = 90, Radius = 20 },
+                    // Continue adding points as necessary
+                },
+                IsClosed = false,
+                Fill = null,
+            };
+
+            magneticHeadingChart = new PolarChart
+            {
+                Series = new ISeries[] { headingSeries },
+                AngleAxes = new PolarAxis[]
+                {
+                    new PolarAxis
+                    {
+                        MinLimit = 0,
+                        MaxLimit = 360,
+                        Labeler = angle => $"{angle}°",
+                    }
+                },
+                Location = new Point(520, 70),
+                Size = new Size(500, 350),
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+            };
+            //Debug.WriteLine($"Chart Location: {magneticHeadingChart.Location}, Size: {magneticHeadingChart.Size}");
+            //Debug.WriteLine($"Group Box Location: {magneticHeadingGroupBox.Location}, Size: {magneticHeadingGroupBox.Size}");
+
+            //magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
+            //Debug.WriteLine("Number of Controls in Magnetic Heading Group Box: " + magneticHeadingGroupBox.Controls.Count);
+        }
+
+        private void UpdateMagneticHeading(double headingDegrees)
+        {
+            headingValue.Value = headingDegrees;
+        }
+
         private void buttonConnect_Click(object sender, EventArgs e)
         {
             if (simconnect == null)
