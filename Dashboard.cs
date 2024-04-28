@@ -53,6 +53,7 @@ using LiveCharts.Wpf;
 using System.Collections.ObjectModel;
 using LiveChartsCore.SkiaSharpView.WinForms;
 using OpenTK.Graphics.OpenGL;
+using LiveChartsCore.SkiaSharpView.SKCharts;
 
 namespace Managed_Dashboard
 {
@@ -339,7 +340,7 @@ namespace Managed_Dashboard
                     // Ryan--
                     // Convert radians to degrees
                     double heading_degrees = s1.magnetic_heading * (180 / Math.PI);
-                    UpdateMagneticHeading(heading_degrees);
+                    //   UpdateMagneticHeading(heading_degrees);
                     double pitch_degrees = s1.pitch * (180 / Math.PI);
                     double bank_degrees = s1.bank * (180 / Math.PI);
 
@@ -360,6 +361,7 @@ namespace Managed_Dashboard
                         Debug.WriteLine("Time: " + s1.time);
                         // Ryan-- magnetic heading
                         Debug.WriteLine("Magnetic heading: " + s1.magnetic_heading);
+                        Debug.WriteLine("Magnetic heading: " + heading_degrees);
                         // Ryan-- current pitch, bank, heading
                         Debug.WriteLine("Pitch: " + s1.pitch);
                         Debug.WriteLine("Bank: " + s1.bank);
@@ -544,11 +546,10 @@ namespace Managed_Dashboard
             pb_chart.Series.Add(bankSeries);
             //pb_chart.Series.Add(headingSeries);
         }
-
         private void InitializeHeading()
         {
             Debug.WriteLine("Initializing Magnetic Heading Chart...");
-
+            /*
             var headingSeries = new PolarLineSeries<ObservablePolarPoint>
             {
                 Values = new ObservableCollection<ObservablePolarPoint>
@@ -561,8 +562,20 @@ namespace Managed_Dashboard
                 IsClosed = false,
                 Fill = null,
             };
-
-            magneticHeadingChart = new PolarChart
+            */
+            magneticHeadingChart = new PolarChart();
+            magneticHeadingChart.Series = new[]
+            {
+                new PolarLineSeries<double>
+                {
+                    Values = new double[] {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
+                    Fill = null,
+                    IsClosed = false,
+                }
+            };
+            //magneticHeadingChart.Size = new System.Drawing.Size(400, 400);
+            // magneticHeadingChart.Location = new System.Drawing.Point(550, 80);/
+            /*
             {
                 Series = new ISeries[] { headingSeries },
                 AngleAxes = new PolarAxis[]
@@ -577,19 +590,20 @@ namespace Managed_Dashboard
                 Location = new Point(520, 70),
                 Size = new Size(500, 350),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right,
-            };
-            //Debug.WriteLine($"Chart Location: {magneticHeadingChart.Location}, Size: {magneticHeadingChart.Size}");
-            //Debug.WriteLine($"Group Box Location: {magneticHeadingGroupBox.Location}, Size: {magneticHeadingGroupBox.Size}");
+            };*/
+            Debug.WriteLine($"Chart Location: {magneticHeadingChart.Location}, Size: {magneticHeadingChart.Size}");
+            Debug.WriteLine($"Group Box Location: {magneticHeadingGroupBox.Location}, Size: {magneticHeadingGroupBox.Size}");
 
-            //magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
-            //Debug.WriteLine("Number of Controls in Magnetic Heading Group Box: " + magneticHeadingGroupBox.Controls.Count);
+            magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
+            Debug.WriteLine("Number of Controls in Magnetic Heading Group Box: " + magneticHeadingGroupBox.Controls.Count);
         }
 
+        /*
         private void UpdateMagneticHeading(double headingDegrees)
         {
             headingValue.Value = headingDegrees;
         }
-
+        */
         private void buttonConnect_Click(object sender, EventArgs e)
         {
             if (simconnect == null)
