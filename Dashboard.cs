@@ -54,6 +54,11 @@ using System.Collections.ObjectModel;
 using LiveChartsCore.SkiaSharpView.WinForms;
 using OpenTK.Graphics.OpenGL;
 using LiveChartsCore.SkiaSharpView.SKCharts;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
+using LiveChartsCore.SkiaSharpView.Painting.Effects;
+using LiveCharts.Helpers;
+using System.Linq;
 
 namespace Managed_Dashboard
 {
@@ -85,6 +90,7 @@ namespace Managed_Dashboard
 
         // Ryan--
         private double prev_time = 0;
+        private double counter = 0;
 
         // User-defined win32 event
         const int WM_USER_SIMCONNECT = 0x0402;
@@ -349,6 +355,7 @@ namespace Managed_Dashboard
                     // Time will not update if simulation is paused.
                     if (prev_time != s1.time)
                     {
+                        counter += 1;
                         // Ryan-- print to debug console instead of text box.
                         Debug.WriteLine("Title: " + s1.title);
                         Debug.WriteLine("Lat:   " + s1.latitude);
@@ -372,6 +379,7 @@ namespace Managed_Dashboard
                         speed_chart.Series[0].Values.Add(s1.speed);
                         pb_chart.Series[0].Values.Add(s1.pitch);
                         pb_chart.Series[1].Values.Add(s1.bank);
+                        //magneticHeadingChart.Add(new ObservablePoint(counter, heading_degrees));
                         // Update text boxes with new data
                         timeTextBox.Text = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
                         latitudeTextBox.Text = s1.latitude.ToString("F6");
@@ -566,14 +574,43 @@ namespace Managed_Dashboard
             magneticHeadingChart = new PolarChart();
             magneticHeadingChart.Series = new[]
             {
-                new PolarLineSeries<double>
+                new PolarLineSeries<ObservablePoint>
                 {
-                    Values = new double[] {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
+                    Values = new ObservablePoint[] {},
                     Fill = null,
                     IsClosed = false,
                 }
             };
-            //magneticHeadingChart.Size = new System.Drawing.Size(400, 400);
+
+            magneticHeadingChart.AngleAxes = new[]
+            {
+                new PolarAxis
+                {
+                    TextSize = 10,
+                    LabelsPaint = new SolidColorPaint(SKColors.Green),
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
+                    {
+                        StrokeThickness = 1,
+                        PathEffect = new DashEffect(new float[] {3, 3})
+                    },
+                    MinLimit = 0,
+                    MaxLimit = 360,
+                    Labeler = angle => $"{angle}°",
+                    ForceStepToMin = true,
+                    MinStep = 30,
+                }
+            };
+
+            magneticHeadingChart.RadiusAxes = new[]
+            {
+                new PolarAxis
+                {
+                    TextSize = 10,
+                    LabelsPaint = new SolidColorPaint(SKColors.Blue),
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 },
+                }
+            };
+            magneticHeadingChart.Size = new System.Drawing.Size(350, 350);
             // magneticHeadingChart.Location = new System.Drawing.Point(550, 80);/
             /*
             {
