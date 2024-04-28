@@ -52,6 +52,7 @@ using Managed_Dashboard;
 using LiveCharts.Wpf;
 using System.Collections.ObjectModel;
 using LiveChartsCore.SkiaSharpView.WinForms;
+using OpenTK.Graphics.OpenGL;
 
 namespace Managed_Dashboard
 {
@@ -130,14 +131,14 @@ namespace Managed_Dashboard
             timeLabel = new Label
             {
                 Text = "Time:",
-                Location = new Point(450, 12),
+                Location = new Point(400, 12),
                 Size = new Size(100, 20)
             };
             Controls.Add(timeLabel);
 
             timeTextBox = new Label
             {
-                Location = new Point(450, 30),
+                Location = new Point(400, 30),
                 Size = new Size(150, 20)
                 //ReadOnly = true
             };
@@ -265,7 +266,7 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Title", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Latitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Longitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Altitude", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                // simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Altitude", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- changed from altitude to altitude above ground
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Alt Above Ground", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- on data request, we also define speed
@@ -274,7 +275,7 @@ namespace Managed_Dashboard
                 // Ryan-- get absolute time from epoch in seconds
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Absolute Time", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 // Ryan-- get the x and y velocity
-                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Heading Degrees True", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Heading Degrees Magnetic", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Pitch Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Bank Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 
@@ -331,11 +332,9 @@ namespace Managed_Dashboard
                 case DATA_REQUESTS.REQUEST_1:
                     Struct1 s1 = (Struct1)data.dwData[0];
 
-                    // Ryan--
-                    // Convert seconds to ticks (1 tick = 100 nanoseconds)
-                    // Create DateTime object from ticks
-                    long ticks = (long)(s1.time * TimeSpan.TicksPerSecond);
-                    DateTime dateTime = new DateTime(ticks, DateTimeKind.Utc);
+                    TimeSpan ts = TimeSpan.FromSeconds(s1.time);// Ryan--
+
+                    DateTime dateTime = new DateTime(1, 1, 1, 0, 0, 0) + ts;
 
                     // Ryan--
                     // Convert radians to degrees
@@ -358,6 +357,7 @@ namespace Managed_Dashboard
                         Debug.WriteLine("Speed: " + s1.speed);
                         // Ryan-- display time
                         Debug.WriteLine("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                        Debug.WriteLine("Time: " + s1.time);
                         // Ryan-- magnetic heading
                         Debug.WriteLine("Magnetic heading: " + s1.magnetic_heading);
                         // Ryan-- current pitch, bank, heading
@@ -371,7 +371,7 @@ namespace Managed_Dashboard
                         pb_chart.Series[0].Values.Add(s1.pitch);
                         pb_chart.Series[1].Values.Add(s1.bank);
                         // Update text boxes with new data
-                        timeTextBox.Text = dateTime.ToString("HH:mm:ss");
+                        timeTextBox.Text = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
                         latitudeTextBox.Text = s1.latitude.ToString("F6");
                         longitudeTextBox.Text = s1.longitude.ToString("F6");
                         prev_time = s1.time;
