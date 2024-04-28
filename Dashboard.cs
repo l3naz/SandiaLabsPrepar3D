@@ -59,6 +59,7 @@ using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using LiveCharts.Helpers;
 using System.Linq;
+using LiveChartsCore.Geo;
 
 namespace Managed_Dashboard
 {
@@ -86,7 +87,7 @@ namespace Managed_Dashboard
 
         private PolarChart magneticHeadingChart;
         private GroupBox magneticHeadingGroupBox;
-        private ObservableValue headingValue = new ObservableValue(0);
+        private ObservableCollection<ObservablePolarPoint> magnetic_heading_chart_vals;
 
         // Ryan--
         private double prev_time = 0;
@@ -346,7 +347,7 @@ namespace Managed_Dashboard
                     // Ryan--
                     // Convert radians to degrees
                     double heading_degrees = s1.magnetic_heading * (180 / Math.PI);
-                    //   UpdateMagneticHeading(heading_degrees);
+                    
                     double pitch_degrees = s1.pitch * (180 / Math.PI);
                     double bank_degrees = s1.bank * (180 / Math.PI);
 
@@ -355,7 +356,7 @@ namespace Managed_Dashboard
                     // Time will not update if simulation is paused.
                     if (prev_time != s1.time)
                     {
-                        counter += 1;
+                        
                         // Ryan-- print to debug console instead of text box.
                         Debug.WriteLine("Title: " + s1.title);
                         Debug.WriteLine("Lat:   " + s1.latitude);
@@ -379,12 +380,15 @@ namespace Managed_Dashboard
                         speed_chart.Series[0].Values.Add(s1.speed);
                         pb_chart.Series[0].Values.Add(s1.pitch);
                         pb_chart.Series[1].Values.Add(s1.bank);
-                        //magneticHeadingChart.Add(new ObservablePoint(counter, heading_degrees));
+                        magnetic_heading_chart_vals.Add(new ObservablePolarPoint(heading_degrees, counter));
+                        //Debug.WriteLine(magneticHeadingChart.Series.);
+                            //<ObservablePoint>(new ObservablePoint(counter, heading_degrees));
                         // Update text boxes with new data
                         timeTextBox.Text = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
                         latitudeTextBox.Text = s1.latitude.ToString("F6");
                         longitudeTextBox.Text = s1.longitude.ToString("F6");
                         prev_time = s1.time;
+                        counter += 1;
                     }
                     break;
 
@@ -466,6 +470,7 @@ namespace Managed_Dashboard
                 Title = "Altitude",
                 Values = new ChartValues<double>(), // Initialize empty chart values
                 PointGeometry = DefaultGeometries.Circle, // Set shape for series 1 points
+                PointGeometrySize = 5,
             };
             altitude_chart.Zoom = ZoomingOptions.X;
             altitude_chart.Pan = PanningOptions.X;
@@ -501,6 +506,7 @@ namespace Managed_Dashboard
                 Title = "Speed",
                 Values = new ChartValues<double>(), // Initialize empty chart values
                 PointGeometry = DefaultGeometries.Circle, // Hide points on the line
+                PointGeometrySize = 5,
             };
             speed_chart.Zoom = ZoomingOptions.X;
             speed_chart.Pan = PanningOptions.X;
@@ -535,14 +541,16 @@ namespace Managed_Dashboard
             {
                 Title = "Pitch",
                 Values = new ChartValues<double>(), // Initialize empty chart values
-                PointGeometry = DefaultGeometries.Circle // Hide points on the line
+                PointGeometry = DefaultGeometries.Circle, // Hide points on the line
+                PointGeometrySize = 5,
             };
 
             var bankSeries = new LineSeries
             {
                 Title = "Bank",
                 Values = new ChartValues<double>(), // Initialize empty chart values
-                PointGeometry = DefaultGeometries.Circle // Hide points on the line
+                PointGeometry = DefaultGeometries.Circle, // Hide points on the line
+                PointGeometrySize = 5,
             };
 
             // Add the series to the chart
@@ -556,29 +564,18 @@ namespace Managed_Dashboard
         }
         private void InitializeHeading()
         {
-            Debug.WriteLine("Initializing Magnetic Heading Chart...");
-            /*
-            var headingSeries = new PolarLineSeries<ObservablePolarPoint>
-            {
-                Values = new ObservableCollection<ObservablePolarPoint>
-                {
-                    new ObservablePolarPoint { Angle = 0, Radius = 10 },
-                    new ObservablePolarPoint { Angle = 45, Radius = 15 },
-                    new ObservablePolarPoint { Angle = 90, Radius = 20 },
-                    // Continue adding points as necessary
-                },
-                IsClosed = false,
-                Fill = null,
-            };
-            */
+            // Debug.WriteLine("Initializing Magnetic Heading Chart...");
             magneticHeadingChart = new PolarChart();
+            magnetic_heading_chart_vals = new ObservableCollection<ObservablePolarPoint> {};
             magneticHeadingChart.Series = new[]
             {
-                new PolarLineSeries<ObservablePoint>
+                new PolarLineSeries<ObservablePolarPoint>
                 {
-                    Values = new ObservablePoint[] {},
+                    Values = magnetic_heading_chart_vals,
                     Fill = null,
                     IsClosed = false,
+                    GeometrySize = 5,
+
                 }
             };
 
@@ -610,37 +607,14 @@ namespace Managed_Dashboard
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 },
                 }
             };
-            magneticHeadingChart.Size = new System.Drawing.Size(350, 350);
-            // magneticHeadingChart.Location = new System.Drawing.Point(550, 80);/
-            /*
-            {
-                Series = new ISeries[] { headingSeries },
-                AngleAxes = new PolarAxis[]
-                {
-                    new PolarAxis
-                    {
-                        MinLimit = 0,
-                        MaxLimit = 360,
-                        Labeler = angle => $"{angle}°",
-                    }
-                },
-                Location = new Point(520, 70),
-                Size = new Size(500, 350),
-                Anchor = AnchorStyles.Top | AnchorStyles.Right,
-            };*/
-            Debug.WriteLine($"Chart Location: {magneticHeadingChart.Location}, Size: {magneticHeadingChart.Size}");
-            Debug.WriteLine($"Group Box Location: {magneticHeadingGroupBox.Location}, Size: {magneticHeadingGroupBox.Size}");
-
+            magneticHeadingChart.Size = new System.Drawing.Size(325, 325);
+            magneticHeadingChart.Location = new Point(90, 20);
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
-            Debug.WriteLine("Number of Controls in Magnetic Heading Group Box: " + magneticHeadingGroupBox.Controls.Count);
+            Debug.WriteLine($"Chart Location: {magneticHeadingChart.Location}, Size: {magneticHeadingChart.Size}");
+            // Debug.WriteLine($"Group Box Location: {magneticHeadingGroupBox.Location}, Size: {magneticHeadingGroupBox.Size}");
+            // Debug.WriteLine("Number of Controls in Magnetic Heading Group Box: " + magneticHeadingGroupBox.Controls.Count);
         }
-
-        /*
-        private void UpdateMagneticHeading(double headingDegrees)
-        {
-            headingValue.Value = headingDegrees;
-        }
-        */
+        
         private void buttonConnect_Click(object sender, EventArgs e)
         {
             if (simconnect == null)
@@ -680,6 +654,7 @@ namespace Managed_Dashboard
             speed_chart.Series[0].Values.Clear();
             pb_chart.Series[0].Values.Clear();
             pb_chart.Series[1].Values.Clear();
+            magnetic_heading_chart_vals.Clear();
 
             closeConnection();
             // Ryan-- middle parameter removed
