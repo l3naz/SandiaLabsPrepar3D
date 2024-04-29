@@ -2,81 +2,47 @@
 // Use of this file is bound by the PREPAR3D® SOFTWARE DEVELOPER KIT END USER LICENSE AGREEMENT
 
 //
-// Managed Data Request sample
+// Managed Dashboard
 //
 // Click on Connect to try and connect to a running version of Prepar3D
-// Click on Request Data any number of times
+// Data requests will be made on every second
+// NOTE-- Set DEBUG to true to print information to console
 // Click on Disconnect to close the connection, and then you should
 // be able to click on Connect and restart the process
 //
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
-
-// Gaby -- imports to use LiveCharts
 using LiveCharts;
-//using LiveCharts.Wpf;
-using LiveCharts.WinForms;
-
-using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
-//using CommunityToolkit.Mvvm.ComponentModel;
 using LiveChartsCore.Defaults;
-//using LiveChartsCore.SkiaSharpView.WinForms;
-
-// Ryan-- Livecharts2
-/*
-using System.Linq;
-//using CommunityToolkit.Mvvm.Input;
-using LiveChartsCore;
-using LiveChartsCore.Defaults;
-using LiveChartsCore.Kernel.Events;
-using LiveChartsCore.Kernel.Sketches;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Drawing;
-using LiveChartsCore.SkiaSharpView.Painting;
-using SkiaSharp;
-*/
-
-// Add these two statements to all SimConnect clients
 using LockheedMartin.Prepar3D.SimConnect;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using Managed_Dashboard;
 using LiveCharts.Wpf;
 using System.Collections.ObjectModel;
 using LiveChartsCore.SkiaSharpView.WinForms;
-using OpenTK.Graphics.OpenGL;
-using LiveChartsCore.SkiaSharpView.SKCharts;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
-using LiveCharts.Helpers;
-using System.Linq;
-using LiveChartsCore.Geo;
+
 
 namespace Managed_Dashboard
 {
     public partial class Form1 : Form
     {
-
-        // Gaby --
         private LiveCharts.WinForms.CartesianChart altitude_chart;
         private LiveCharts.WinForms.CartesianChart speed_chart;
         private LiveCharts.WinForms.CartesianChart pb_chart;
-        // Add a Panel control to the form
+        private PolarChart magneticHeadingChart;
+        private ObservableCollection<ObservablePolarPoint> magnetic_heading_chart_vals;
+
         private Panel chartPanel;
-        // Add a GroupBox to contain the chart
         private GroupBox altitudeGroupBox;
         private GroupBox speedGroupBox;
         private GroupBox pbGroupBox;
-
+        private GroupBox magneticHeadingGroupBox;
 
         private Label timeTextBox;
         private Label latitudeTextBox;
@@ -85,31 +51,19 @@ namespace Managed_Dashboard
         private Label latitudeLabel;
         private Label longitudeLabel;
 
-        private PolarChart magneticHeadingChart;
-        private GroupBox magneticHeadingGroupBox;
-        private ObservableCollection<ObservablePolarPoint> magnetic_heading_chart_vals;
-
-        // Ryan--
         private double prev_time = 0;
         private double counter = 0;
+        private const bool DEBUG = false;
 
         // User-defined win32 event
         const int WM_USER_SIMCONNECT = 0x0402;
-
-        // SimConnect object
         SimConnect simconnect = null;
 
-        // Ryan-- timer will space out requests by 1 second
+        // Timer sets requests to 1 second
         Timer requestTimer = new Timer();
-        enum DEFINITIONS
-        {
-            Struct1,
-        }
+        enum DEFINITIONS{ Struct1 }
 
-        enum DATA_REQUESTS
-        {
-            REQUEST_1,
-        };
+        enum DATA_REQUESTS { REQUEST_1 };
 
         // this is how you declare a data structure so that
         // simconnect knows how to fill it/read it.
@@ -122,68 +76,59 @@ namespace Managed_Dashboard
             public double latitude;
             public double longitude;
             public double altitude;
-            // Ryan-- adding speed property
             public double speed;
-            // Ryan-- absolute time
             public double time;
-            // Ryan--
             public double magnetic_heading;
-            // Ryan--
             public double pitch;
             public double bank;
         };
 
         private void InitializeTextBoxes()
         {
-            // Initialize Labels
             timeLabel = new Label
             {
                 Text = "Time:",
                 Location = new Point(400, 12),
                 Size = new Size(100, 20)
             };
-            Controls.Add(timeLabel);
 
             timeTextBox = new Label
             {
                 Location = new Point(400, 30),
                 Size = new Size(150, 20)
-                //ReadOnly = true
             };
-            Controls.Add(timeTextBox);
 
-            // Latitude
             latitudeLabel = new Label
             {
                 Text = "Latitude:",
                 Location = new Point(620, 12),
                 Size = new Size(100, 20)
             };
-            Controls.Add(latitudeLabel);
 
             latitudeTextBox = new Label
             {
                 Location = new Point(620, 30),
                 Size = new Size(150, 20)
-                //ReadOnly = true
             };
-            Controls.Add(latitudeTextBox);
 
-            // Longitude
             longitudeLabel = new Label
             {
                 Text = "Longitude:",
                 Location = new Point(790, 12),
                 Size = new Size(100, 20)
             };
-            Controls.Add(longitudeLabel);
-
+            
             longitudeTextBox = new Label
             {
                 Location = new Point(790, 30),
                 Size = new Size(150, 20)
-                //ReadOnly = true
             };
+            
+            Controls.Add(timeLabel);
+            Controls.Add(timeTextBox);
+            Controls.Add(latitudeLabel);
+            Controls.Add(latitudeTextBox);
+            Controls.Add(longitudeLabel);
             Controls.Add(longitudeTextBox);
         }
 
@@ -198,17 +143,15 @@ namespace Managed_Dashboard
                 Dock = DockStyle.Fill // Fill the entire form area
             };
             Controls.Add(chartPanel);
-            // Initialize altitude and speed GroupBoxes
-            InitializeAllGroupBox();
 
-            // Ryan-- remove middle button parameter
+            InitializeAllGroupBox();
             setButtons(true, false);
             
-            // Ryan-- Set timer interval to 1 second
+            // timer interval is 1 second
             requestTimer.Interval = 1000;
             requestTimer.Tick += RequestTimer_Tick;
 
-            // Initialize the chart
+            // Initialize the charts
             InitializeAltitude();
             InitializeSpeed();
             Initializepb();
@@ -217,12 +160,11 @@ namespace Managed_Dashboard
             speedGroupBox.Controls.Add(speed_chart);
             pbGroupBox.Controls.Add(pb_chart);
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
-
         }
+
         // Simconnect client will send a win32 message when there is 
         // a packet to process. ReceiveMessage must be called to
         // trigger the events. This model keeps simconnect processing on the main thread.
-
         protected override void DefWndProc(ref Message m)
         {
             if (m.Msg == WM_USER_SIMCONNECT)
@@ -238,11 +180,9 @@ namespace Managed_Dashboard
             }
         }
 
-        // Ryan-- remove one parameter (bool bGet). commented out middle button line.
         private void setButtons(bool bConnect, bool bDisconnect)
         {
             buttonConnect.Enabled = bConnect;
-            // buttonRequestData.Enabled = bGet;
             buttonDisconnect.Enabled = bDisconnect;
         }
 
@@ -253,8 +193,7 @@ namespace Managed_Dashboard
                 // Dispose serves the same purpose as SimConnect_Close()
                 simconnect.Dispose();
                 simconnect = null;
-                // Ryan--
-                Debug.WriteLine("Connection closed");
+                if(DEBUG) Debug.WriteLine("Connection closed");
             }
         }
 
@@ -274,15 +213,9 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Title", null, SIMCONNECT_DATATYPE.STRING256, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Latitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Longitude", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                // simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Altitude", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                // Ryan-- changed from altitude to altitude above ground
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Alt Above Ground", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                // Ryan-- on data request, we also define speed
-                // Gaby -- fixed to be able to update speed
-                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Ground Velocity", "knots", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED); // Add speed definition
-                // Ryan-- get absolute time from epoch in seconds
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Ground Velocity", "knots", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Absolute Time", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                // Ryan-- get the x and y velocity
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Heading Degrees Magnetic", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Pitch Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Bank Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
@@ -296,35 +229,27 @@ namespace Managed_Dashboard
             }
             catch (COMException ex)
             {
-                // Ryan--
                 Debug.WriteLine(ex.Message);
             }
         }
 
         void simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
-            // Ryan--
-            Debug.WriteLine("Connected to Prepar3D");
-
-            // Ryan-- Start the timer when connected
+            if(DEBUG) Debug.WriteLine("Connected to Prepar3D");
             requestTimer.Start();
         }
 
         // The case where the user closes Prepar3D
         void simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
-            // Ryan--
-            Debug.WriteLine("Prepar3D has exited");
+            if(DEBUG) Debug.WriteLine("Prepar3D has exited");
             closeConnection();
         }
 
         void simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
         {
-            // Ryan--
-            Debug.WriteLine("Exception received: " + data.dwException);
+            if(DEBUG) Debug.WriteLine("Exception received: " + data.dwException);
         }
-
-
 
         // The case where the user closes the client
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -339,50 +264,33 @@ namespace Managed_Dashboard
             {
                 case DATA_REQUESTS.REQUEST_1:
                     Struct1 s1 = (Struct1)data.dwData[0];
-
-                    TimeSpan ts = TimeSpan.FromSeconds(s1.time);// Ryan--
-
+                    TimeSpan ts = TimeSpan.FromSeconds(s1.time);
                     DateTime dateTime = new DateTime(1, 1, 1, 0, 0, 0) + ts;
 
-                    // Ryan--
-                    // Convert radians to degrees
-                    double heading_degrees = s1.magnetic_heading * (180 / Math.PI);
-                    
-                    double pitch_degrees = s1.pitch * (180 / Math.PI);
-                    double bank_degrees = s1.bank * (180 / Math.PI);
-
-                    // Ryan--
                     // Only update charts if the time has updated.
                     // Time will not update if simulation is paused.
                     if (prev_time != s1.time)
                     {
-                        
-                        // Ryan-- print to debug console instead of text box.
-                        Debug.WriteLine("Title: " + s1.title);
-                        Debug.WriteLine("Lat:   " + s1.latitude);
-                        Debug.WriteLine("Lon:   " + s1.longitude);
-                        Debug.WriteLine("Alt:   " + s1.altitude);
-                        // Ryan-- adding ground speed to display
-                        Debug.WriteLine("Speed: " + s1.speed);
-                        // Ryan-- display time
-                        Debug.WriteLine("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                        Debug.WriteLine("Time: " + s1.time);
-                        // Ryan-- magnetic heading
-                        Debug.WriteLine("Magnetic heading: " + s1.magnetic_heading);
-                        Debug.WriteLine("Magnetic heading: " + heading_degrees);
-                        // Ryan-- current pitch, bank, heading
-                        Debug.WriteLine("Pitch: " + s1.pitch);
-                        Debug.WriteLine("Bank: " + s1.bank);
-
+                        if (DEBUG)
+                        {
+                            Debug.WriteLine("Title: " + s1.title);
+                            Debug.WriteLine("Lat:   " + s1.latitude);
+                            Debug.WriteLine("Lon:   " + s1.longitude);
+                            Debug.WriteLine("Alt:   " + s1.altitude);
+                            Debug.WriteLine("Speed: " + s1.speed);
+                            Debug.WriteLine("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                            Debug.WriteLine("Time: " + s1.time);
+                            Debug.WriteLine("Magnetic heading: " + s1.magnetic_heading);
+                            Debug.WriteLine("Pitch: " + s1.pitch);
+                            Debug.WriteLine("Bank: " + s1.bank);
+                        }
                         // Send info to ChartForm
-                        // Gaby
                         altitude_chart.Series[0].Values.Add(s1.altitude);
                         speed_chart.Series[0].Values.Add(s1.speed);
-                        pb_chart.Series[0].Values.Add(s1.pitch);
-                        pb_chart.Series[1].Values.Add(s1.bank);
-                        magnetic_heading_chart_vals.Add(new ObservablePolarPoint(heading_degrees, counter));
-                        //Debug.WriteLine(magneticHeadingChart.Series.);
-                            //<ObservablePoint>(new ObservablePoint(counter, heading_degrees));
+                        pb_chart.Series[0].Values.Add(RadiansToDegrees(s1.pitch));
+                        pb_chart.Series[1].Values.Add(RadiansToDegrees(s1.bank));
+                        magnetic_heading_chart_vals.Add(new ObservablePolarPoint(RadiansToDegrees(s1.magnetic_heading), counter));
+                        
                         // Update text boxes with new data
                         timeTextBox.Text = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
                         latitudeTextBox.Text = s1.latitude.ToString("F6");
@@ -397,10 +305,14 @@ namespace Managed_Dashboard
                     break;
             }
         }
-
+        private double RadiansToDegrees(double x)
+        {
+            x *= (180 / Math.PI);
+            if (x < 0) x += 360;
+            return x;
+        }
         private void InitializeAllGroupBox()
         {
-            // altitude group box
             altitudeGroupBox = new GroupBox()
             {
                 Text = "Altitude Chart",
@@ -409,9 +321,6 @@ namespace Managed_Dashboard
 
             };
 
-            chartPanel.Controls.Add(altitudeGroupBox);
-
-            // speed group box
             speedGroupBox = new GroupBox()
             {
                 Text = "Speed Chart",
@@ -419,9 +328,6 @@ namespace Managed_Dashboard
                 Size = new System.Drawing.Size(500, 350),
             };
 
-            chartPanel.Controls.Add(speedGroupBox);
-
-            // pitch, bank heading group box
             pbGroupBox = new GroupBox()
             {
                 Text = "Pitch, Bank",
@@ -430,15 +336,16 @@ namespace Managed_Dashboard
 
             };
 
-            chartPanel.Controls.Add(pbGroupBox);
-
-            //heading group box
             magneticHeadingGroupBox = new GroupBox
             {
                 Text = "Magnetic Heading",
                 Location = new Point(520, 70),
                 Size = new Size(500, 350),
             };
+
+            chartPanel.Controls.Add(altitudeGroupBox);
+            chartPanel.Controls.Add(speedGroupBox);
+            chartPanel.Controls.Add(pbGroupBox);
             chartPanel.Controls.Add(magneticHeadingGroupBox);
         }
 
@@ -453,14 +360,14 @@ namespace Managed_Dashboard
             // Define X axis
             altitude_chart.AxisX.Add(new LiveCharts.Wpf.Axis
             {
-                Title = "Time (seconds)", // X axis label
+                Title = "Time (seconds)",
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
             // Define Y axis
             altitude_chart.AxisY.Add(new LiveCharts.Wpf.Axis
             {
-                Title = "Altitude (feet)", // Y axis label
+                Title = "Altitude Above Ground (feet)",
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
@@ -469,12 +376,11 @@ namespace Managed_Dashboard
             {
                 Title = "Altitude",
                 Values = new ChartValues<double>(), // Initialize empty chart values
-                PointGeometry = DefaultGeometries.Circle, // Set shape for series 1 points
+                PointGeometry = DefaultGeometries.Circle,
                 PointGeometrySize = 5,
             };
             altitude_chart.Zoom = ZoomingOptions.X;
             altitude_chart.Pan = PanningOptions.X;
-            // Add the series to the chart
             altitude_chart.Series.Add(altitudeSeries);
         }
 
@@ -489,14 +395,14 @@ namespace Managed_Dashboard
             // Define X axis
             speed_chart.AxisX.Add(new LiveCharts.Wpf.Axis
             {
-                Title = "Time (seconds)", // X axis label
+                Title = "Time (seconds)",
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
             // Define Y axis
             speed_chart.AxisY.Add(new LiveCharts.Wpf.Axis
             {
-                Title = "Speed (knots)", // Y axis label
+                Title = "Speed (knots)",
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
@@ -505,12 +411,11 @@ namespace Managed_Dashboard
             {
                 Title = "Speed",
                 Values = new ChartValues<double>(), // Initialize empty chart values
-                PointGeometry = DefaultGeometries.Circle, // Hide points on the line
+                PointGeometry = DefaultGeometries.Circle,
                 PointGeometrySize = 5,
             };
             speed_chart.Zoom = ZoomingOptions.X;
             speed_chart.Pan = PanningOptions.X;
-            // Add the series to the chart
             speed_chart.Series.Add(speedSeries);
         }
 
@@ -525,15 +430,15 @@ namespace Managed_Dashboard
             // Define X axis
             pb_chart.AxisX.Add(new LiveCharts.Wpf.Axis
             {
-                Title = "Time (seconds)", // X axis label
+                Title = "Time (seconds)",
                 LabelFormatter = value => value.ToString("N3"), // Optional formatting for axis labels
             });
 
             // Define Y axis
             pb_chart.AxisY.Add(new LiveCharts.Wpf.Axis
             {
-                Title = "Radians", // Y axis label
-                LabelFormatter = value => value.ToString("N3"), // Optional formatting for axis labels
+                Title = "Degrees",
+                LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
             // Define a new LineSeries for altitude data
@@ -541,7 +446,7 @@ namespace Managed_Dashboard
             {
                 Title = "Pitch",
                 Values = new ChartValues<double>(), // Initialize empty chart values
-                PointGeometry = DefaultGeometries.Circle, // Hide points on the line
+                PointGeometry = DefaultGeometries.Circle,
                 PointGeometrySize = 5,
             };
 
@@ -549,7 +454,7 @@ namespace Managed_Dashboard
             {
                 Title = "Bank",
                 Values = new ChartValues<double>(), // Initialize empty chart values
-                PointGeometry = DefaultGeometries.Circle, // Hide points on the line
+                PointGeometry = DefaultGeometries.Circle,
                 PointGeometrySize = 5,
             };
 
@@ -557,14 +462,11 @@ namespace Managed_Dashboard
             pb_chart.LegendLocation = LegendLocation.Bottom; // Change this to control legend location
             pb_chart.Zoom = ZoomingOptions.X;
             pb_chart.Pan = PanningOptions.X;
-
             pb_chart.Series.Add(pitchSeries);
             pb_chart.Series.Add(bankSeries);
-            //pb_chart.Series.Add(headingSeries);
         }
         private void InitializeHeading()
         {
-            // Debug.WriteLine("Initializing Magnetic Heading Chart...");
             magneticHeadingChart = new PolarChart();
             magnetic_heading_chart_vals = new ObservableCollection<ObservablePolarPoint> {};
             magneticHeadingChart.Series = new[]
@@ -610,9 +512,6 @@ namespace Managed_Dashboard
             magneticHeadingChart.Size = new System.Drawing.Size(325, 325);
             magneticHeadingChart.Location = new Point(90, 20);
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
-            Debug.WriteLine($"Chart Location: {magneticHeadingChart.Location}, Size: {magneticHeadingChart.Size}");
-            // Debug.WriteLine($"Group Box Location: {magneticHeadingGroupBox.Location}, Size: {magneticHeadingGroupBox.Size}");
-            // Debug.WriteLine("Number of Controls in Magnetic Heading Group Box: " + magneticHeadingGroupBox.Controls.Count);
         }
         
         private void buttonConnect_Click(object sender, EventArgs e)
@@ -622,27 +521,19 @@ namespace Managed_Dashboard
                 try
                 {
                     // the constructor is similar to SimConnect_Open in the native API4
-                    // Ryan-- change name to Managed Dashboard
                     simconnect = new SimConnect("Managed Dashboard", this.Handle, WM_USER_SIMCONNECT, null, 0);
-                   
-                    // Ryan-- middle parameter removed
                     setButtons(false, true);
-
                     initDataRequest();
                 }
                 catch (COMException ex)
                 {
-                    // Ryan--
                     Debug.WriteLine("Unable to connect to Prepar3D:\n\n" + ex.Message);
                 }
             }
             else
             {
-                // Ryan--
                 Debug.WriteLine("Error - try again");
                 closeConnection();
-
-                // Ryan-- middle parameter removed
                 setButtons(true, false);
             }
         }
@@ -655,21 +546,17 @@ namespace Managed_Dashboard
             pb_chart.Series[0].Values.Clear();
             pb_chart.Series[1].Values.Clear();
             magnetic_heading_chart_vals.Clear();
-
             closeConnection();
-            // Ryan-- middle parameter removed
             setButtons(true, false);
         }
 
-        // Ryan-- new request event handler
         private void RequestTimer_Tick(object sender, EventArgs e)
         {
             // Send data request every second
             if (simconnect != null)
             {
                 simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-                // Ryan--
-                Debug.WriteLine("Request sent...");
+                if(DEBUG) Debug.WriteLine("Request sent...");
             }
         }
     
