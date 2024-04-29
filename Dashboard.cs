@@ -287,8 +287,8 @@ namespace Managed_Dashboard
                         // Send info to ChartForm
                         altitude_chart.Series[0].Values.Add(s1.altitude);
                         speed_chart.Series[0].Values.Add(s1.speed);
-                        pb_chart.Series[0].Values.Add(RadiansToDegrees(s1.pitch));
-                        pb_chart.Series[1].Values.Add(RadiansToDegrees(s1.bank));
+                        pb_chart.Series[0].Values.Add(s1.pitch);
+                        pb_chart.Series[1].Values.Add(s1.bank);
                         magnetic_heading_chart_vals.Add(new ObservablePolarPoint(RadiansToDegrees(s1.magnetic_heading), counter));
                         
                         // Update text boxes with new data
@@ -437,7 +437,7 @@ namespace Managed_Dashboard
             // Define Y axis
             pb_chart.AxisY.Add(new LiveCharts.Wpf.Axis
             {
-                Title = "Degrees",
+                Title = "Radians",
                 LabelFormatter = value => value.ToString("0"), // Optional formatting for axis labels
             });
 
