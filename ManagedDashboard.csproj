@@ -62,103 +62,103 @@
   <!-- Library dependency setup -->
   <ItemGroup>
     <Reference Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Include="LockheedMartin.Prepar3D.SimConnect">
-	  <HintPath>lib\LockheedMartin.Prepar3D.SimConnect.Debug.dll</HintPath>
-	</Reference>
-	<Reference Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Include="LockheedMartin.Prepar3D.SimConnect">
-	  <HintPath>lib\LockheedMartin.Prepar3D.SimConnect.dll</HintPath>
-	</Reference>
-	<Reference Include="System" />
-	<Reference Include="System.Data" />
-	<Reference Include="System.Deployment" />
-	<Reference Include="System.Drawing" />
-	<Reference Include="System.Windows.Forms" />
-	<Reference Include="System.Collections.Generic" />
-	<Reference Include="System.Xaml" />
-	<Reference Include="System.Xml" />
-	<Reference Include="WindowsBase" />
-	<Reference Include="WindowsFormsIntegration" />
-	<Reference Include="PresentationBuildTasks" />
-	<Reference Include="PresentationCore" />
-	<Reference Include="PresentationFramework" />
-	<PackageReference Include="HarfBuzzSharp" Version="7.3.0"  />
-	<PackageReference Include="HarfBuzzSharp.NativeAssets.macOS" Version="7.3.0"  />
-	<PackageReference Include="HarfBuzzSharp.NativeAssets.Win32" Version="7.3.0"  />
-	<PackageReference Include="LiveCharts" Version="0.9.7"  />
-	<PackageReference Include="LiveCharts.WinForms" Version="0.9.7.1"  />
-	<PackageReference Include="LiveCharts.Wpf" Version="0.9.7"  />
-	<PackageReference Include="LiveChartsCore" Version="2.0.0-rc2"  />
-	<PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-rc2"  />
-	<PackageReference Include="LiveChartsCore.SkiaSharpView.WinForms" Version="2.0.0-rc2"  />
-	<PackageReference Include="Newtonsoft.Json" Version="13.0.2"  />
-	<PackageReference Include="OpenTK" Version="3.1.0"  />
-	<PackageReference Include="OpenTK.GLControl" Version="3.1.0"  />
-	<PackageReference Include="SkiaSharp" Version="2.88.6"  />
-	<PackageReference Include="SkiaSharp.HarfBuzz" Version="2.88.6"  />
-	<PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.88.6"  />
-	<PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="2.88.6"  />
-	<PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="2.88.6"  />
-	<PackageReference Include="SkiaSharp.Views.WindowsForms" Version="2.88.6"  />
-	<PackageReference Include="System.Buffers" Version="4.5.1"  />
-	<PackageReference Include="System.Drawing.Common" Version="4.7.3"  />
-	<PackageReference Include="System.Memory" Version="4.5.5"  />
-	<PackageReference Include="System.Numerics.Vectors" Version="4.5.0"  />
-	<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.3"  />
+	<HintPath>C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\lib\SimConnect\managed\LockheedMartin.Prepar3D.SimConnect.Debug.dll</HintPath>
+    </Reference>
+    <Reference Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Include="LockheedMartin.Prepar3D.SimConnect">
+      <HintPath>C:\Program Files\Lockheed Martin\Prepar3D v5 SDK 5.4.9.28482\lib\SimConnect\managed\LockheedMartin.Prepar3D.SimConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Collections.Generic" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="PresentationBuildTasks" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <PackageReference Include="HarfBuzzSharp" Version="7.3.0"  />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.macOS" Version="7.3.0"  />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.Win32" Version="7.3.0"  />
+    <PackageReference Include="LiveCharts" Version="0.9.7"  />
+    <PackageReference Include="LiveCharts.WinForms" Version="0.9.7.1"  />
+    <PackageReference Include="LiveCharts.Wpf" Version="0.9.7"  />
+    <PackageReference Include="LiveChartsCore" Version="2.0.0-rc2"  />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-rc2"  />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WinForms" Version="2.0.0-rc2"  />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2"  />
+    <PackageReference Include="OpenTK" Version="3.1.0"  />
+    <PackageReference Include="OpenTK.GLControl" Version="3.1.0"  />
+    <PackageReference Include="SkiaSharp" Version="2.88.6"  />
+    <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.88.6"  />
+    <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.88.6"  />
+    <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="2.88.6"  />
+    <PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="2.88.6"  />
+    <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="2.88.6"  />
+    <PackageReference Include="System.Buffers" Version="4.5.1"  />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.3"  />
+    <PackageReference Include="System.Memory" Version="4.5.5"  />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0"  />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.3"  />
   </ItemGroup>
 
   <!-- Source code options -->
   <ItemGroup>
-	<Compile Include="Dashboard.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Dashboard.Designer.cs">
-	  <DependentUpon>Dashboard.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Program.cs"/>
-	<Compile Include="Properties\AssemblyInfo.cs"/>
-	<EmbeddedResource Include="Dashboard.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>Dashboard.cs</DependentUpon>
-	</EmbeddedResource>
-	<Compile Include="Properties\Resources.Designer.cs">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  <SubType>Designer</SubType>
-	</Compile>
-	  <None Include="app.config"/>
-	  <None Include="OpenTK.dll.config"/>
-	  <None Include="Properties\Settings.settings">
-		  <Generator>SettingsSingleFileGenerator</Generator>
-		  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-	  </None>
-	  <Compile Include="Properties\Settings.Designer.cs">
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>Settings.settings</DependentUpon>
-		  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  </Compile>
+    <Compile Include="Dashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dashboard.Designer.cs">
+      <DependentUpon>Dashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs"/>
+    <Compile Include="Properties\AssemblyInfo.cs"/>
+    <EmbeddedResource Include="Dashboard.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Dashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Compile>
+      <None Include="app.config"/>
+      <None Include="OpenTK.dll.config"/>
+      <None Include="Properties\Settings.settings">
+	<Generator>SettingsSingleFileGenerator</Generator>
+	<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
   </ItemGroup>
-	
+
   <!-- .NET framework setup -->
   <ItemGroup>
-	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-	  <Visible>False</Visible>
-	  <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-	  <Install>false</Install>
-	</BootstrapperPackage>
-	<BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-	  <Visible>False</Visible>
-	  <ProductName>.NET Framework 3.5 SP1</ProductName>
-	  <Install>true</Install>
-	</BootstrapperPackage>
-	<BootstrapperPackage Include="Microsoft.VisualBasic.PowerPacks.10.0">
-		<Visible>False</Visible>
-		<ProductName>Microsoft Visual Basic PowerPacks 10.0</ProductName>
-		<Install>true</Install>
-	</BootstrapperPackage>
-	<BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-		<Visible>False</Visible>
-		<ProductName>Windows Installer 3.1</ProductName>
-		<Install>true</Install>
-	</BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.VisualBasic.PowerPacks.10.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft Visual Basic PowerPacks 10.0</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
