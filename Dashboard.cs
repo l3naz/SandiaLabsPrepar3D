@@ -26,6 +26,8 @@ using LiveChartsCore.SkiaSharpView.WinForms;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
+// using Topshelf.Runtime.Windows;
+
 
 
 namespace Managed_Dashboard
@@ -54,6 +56,7 @@ namespace Managed_Dashboard
         private double prev_time = 0;
         private double counter = 0;
         private const bool DEBUG = false;
+
 
         // User-defined win32 event
         const int WM_USER_SIMCONNECT = 0x0402;
@@ -132,22 +135,39 @@ namespace Managed_Dashboard
             Controls.Add(longitudeTextBox);
         }
 
+
         public Form1()
         {
-
             InitializeComponent();
             InitializeTextBoxes();
 
+            // Set window to fullscreen with transparency
+            this.WindowState = FormWindowState.Maximized;
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.TopMost = true;
+
+            // Transparency for the form background
+            this.BackColor = Color.Black;
+            this.TransparencyKey = this.BackColor;
+            this.Opacity = 0.85;
+
+            // this.chartPanel.Dock = DockStyle.Fill; // Ensure the panel fills the form
+            // this.altitude_chart.Dock = DockStyle.Fill; // Ensure charts are fully responsive to resizing
+
+
+            // Set overlay position to match Prepar3D window
+            SetOverlayOnPrepar3D();
+
+            // Setup charts and controls
             chartPanel = new Panel()
             {
-                Dock = DockStyle.Fill // Fill the entire form area
+                Dock = DockStyle.Fill
             };
             Controls.Add(chartPanel);
 
             InitializeAllGroupBox();
             setButtons(true, false);
-            
-            // timer interval is 1 second
+
             requestTimer.Interval = 1000;
             requestTimer.Tick += RequestTimer_Tick;
 
@@ -156,11 +176,49 @@ namespace Managed_Dashboard
             InitializeSpeed();
             Initializepb();
             InitializeHeading();
+
             altitudeGroupBox.Controls.Add(altitude_chart);
             speedGroupBox.Controls.Add(speed_chart);
             pbGroupBox.Controls.Add(pb_chart);
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
         }
+
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+
+        private void SetOverlayOnPrepar3D()
+        {
+            // Find the Prepar3D window
+            IntPtr hwndPrepar3D = FindWindow(null, "Prepar3D v5"); // Adjust version as necessary
+
+            if (hwndPrepar3D != IntPtr.Zero)
+            {
+                // Get the position and size of the Prepar3D window
+                RECT rect;
+                GetWindowRect(hwndPrepar3D, out rect);
+
+                // Position the overlay window to match the Prepar3D window
+                this.Top = rect.Top;
+                this.Left = rect.Left;
+                this.Width = rect.Right - rect.Left;
+                this.Height = rect.Bottom - rect.Top;
+            }
+        }
+
 
         // Simconnect client will send a win32 message when there is 
         // a packet to process. ReceiveMessage must be called to
