@@ -64,7 +64,7 @@ namespace Managed_Dashboard
 
         // Timer sets requests to 1 second
         Timer requestTimer = new Timer();
-        enum DEFINITIONS{ Struct1 }
+        enum DEFINITIONS { Struct1 }
 
         enum DATA_REQUESTS { REQUEST_1 };
 
@@ -120,13 +120,13 @@ namespace Managed_Dashboard
                 Location = new Point(790, 12),
                 Size = new Size(100, 20)
             };
-            
+
             longitudeTextBox = new Label
             {
                 Location = new Point(790, 30),
                 Size = new Size(150, 20)
             };
-            
+
             Controls.Add(timeLabel);
             Controls.Add(timeTextBox);
             Controls.Add(latitudeLabel);
@@ -142,21 +142,22 @@ namespace Managed_Dashboard
             InitializeTextBoxes();
 
             // Set window to fullscreen with transparency
-            this.WindowState = FormWindowState.Maximized;
+            this.WindowState = FormWindowState.Normal;
             this.FormBorderStyle = FormBorderStyle.None;
-            this.TopMost = true;
+            //this.TopMost = true;
+            BringToTop();
 
             // Transparency for the form background
             this.BackColor = Color.Black;
             this.TransparencyKey = this.BackColor;
-            this.Opacity = 0.85;
+            this.Opacity = 0.75;
 
             // this.chartPanel.Dock = DockStyle.Fill; // Ensure the panel fills the form
             // this.altitude_chart.Dock = DockStyle.Fill; // Ensure charts are fully responsive to resizing
 
 
             // Set overlay position to match Prepar3D window
-            SetOverlayOnPrepar3D();
+            // SetOverlayOnPrepar3D();
 
             // Setup charts and controls
             chartPanel = new Panel()
@@ -170,6 +171,12 @@ namespace Managed_Dashboard
 
             requestTimer.Interval = 1000;
             requestTimer.Tick += RequestTimer_Tick;
+
+            // Timer for polling Prepar3D window position
+            Timer overlayPositionTimer = new Timer();
+            overlayPositionTimer.Interval = 500; // Check window position every 500ms (adjust as needed)
+            overlayPositionTimer.Tick += UpdateOverlayPosition;
+            overlayPositionTimer.Start();
 
             // Initialize the charts
             InitializeAltitude();
@@ -191,7 +198,24 @@ namespace Managed_Dashboard
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
-        [StructLayout(LayoutKind.Sequential)]
+        //[StructLayout(LayoutKind.Sequential)]
+
+        [DllImport("user32.dll")]
+        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+
+        private const UInt32 SWP_NOSIZE = 0x0001;
+        private const UInt32 SWP_NOMOVE = 0x0002;
+        private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        private static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
+
+        private void BringToTop()
+        {
+            IntPtr handle = this.Handle; // Get the handle of your overlay
+            SetWindowPos(handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+
+        }
+
         public struct RECT
         {
             public int Left;
@@ -200,24 +224,45 @@ namespace Managed_Dashboard
             public int Bottom;
         }
 
-        private void SetOverlayOnPrepar3D()
+
+        private void UpdateOverlayPosition(object sender, EventArgs e)
         {
             // Find the Prepar3D window
-            IntPtr hwndPrepar3D = FindWindow(null, "Prepar3D v5"); // Adjust version as necessary
+            IntPtr hwndPrepar3D = FindWindow(null, "Lockheed Martin® Prepar3D® v5"); // Adjust version as necessary
 
             if (hwndPrepar3D != IntPtr.Zero)
             {
+                Debug.WriteLine("Found Prepar3D window");
                 // Get the position and size of the Prepar3D window
                 RECT rect;
                 GetWindowRect(hwndPrepar3D, out rect);
+                // Debug.WriteLine("Top: {0}", rect.Top);
 
-                // Position the overlay window to match the Prepar3D window
-                this.Top = rect.Top;
-                this.Left = rect.Left;
-                this.Width = rect.Right - rect.Left;
-                this.Height = rect.Bottom - rect.Top;
+                // Calculate width and height of the Prepar3D window
+                int width = rect.Right - rect.Left;
+                int height = rect.Bottom - rect.Top;
+                // Debug.WriteLine("Height: {0}", height);
+
+                // Only update if the window is not minimized and the size is valid
+                if (width > 0 && height > 0)
+                {
+                    // Check if the overlay's position and size need to be updated
+                    if (this.Top != rect.Top || this.Left != rect.Left || this.Width != rect.Right - rect.Left || this.Height != rect.Bottom - rect.Top)
+                    {
+                        // Update the overlay's position and size to match the Prepar3D window
+                        this.Top = rect.Top;
+                        this.Left = rect.Left;
+                        this.Width = rect.Right - rect.Left;
+                        this.Height = rect.Bottom - rect.Top;
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Prepar3D window not found.");
             }
         }
+
 
 
         // Simconnect client will send a win32 message when there is 
@@ -251,7 +296,7 @@ namespace Managed_Dashboard
                 // Dispose serves the same purpose as SimConnect_Close()
                 simconnect.Dispose();
                 simconnect = null;
-                if(DEBUG) Debug.WriteLine("Connection closed");
+                Debug.WriteLine("Connection closed");
             }
         }
 
@@ -277,7 +322,7 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Heading Degrees Magnetic", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Pitch Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Bank Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                
+
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
                 // if you skip this step, you will only receive a uint in the .dwData field.
                 simconnect.RegisterDataDefineStruct<Struct1>(DEFINITIONS.Struct1);
@@ -293,20 +338,20 @@ namespace Managed_Dashboard
 
         void simconnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
-            if(DEBUG) Debug.WriteLine("Connected to Prepar3D");
+            Debug.WriteLine("Connected to Prepar3D");
             requestTimer.Start();
         }
 
         // The case where the user closes Prepar3D
         void simconnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
-            if(DEBUG) Debug.WriteLine("Prepar3D has exited");
+            Debug.WriteLine("Prepar3D has exited");
             closeConnection();
         }
 
         void simconnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
         {
-            if(DEBUG) Debug.WriteLine("Exception received: " + data.dwException);
+            Debug.WriteLine("Exception received: " + data.dwException);
         }
 
         // The case where the user closes the client
@@ -329,26 +374,24 @@ namespace Managed_Dashboard
                     // Time will not update if simulation is paused.
                     if (prev_time != s1.time)
                     {
-                        if (DEBUG)
-                        {
-                            Debug.WriteLine("Title: " + s1.title);
-                            Debug.WriteLine("Lat:   " + s1.latitude);
-                            Debug.WriteLine("Lon:   " + s1.longitude);
-                            Debug.WriteLine("Alt:   " + s1.altitude);
-                            Debug.WriteLine("Speed: " + s1.speed);
-                            Debug.WriteLine("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                            Debug.WriteLine("Time: " + s1.time);
-                            Debug.WriteLine("Magnetic heading: " + s1.magnetic_heading);
-                            Debug.WriteLine("Pitch: " + s1.pitch);
-                            Debug.WriteLine("Bank: " + s1.bank);
-                        }
+                        Debug.WriteLine("Title: " + s1.title);
+                        Debug.WriteLine("Lat:   " + s1.latitude);
+                        Debug.WriteLine("Lon:   " + s1.longitude);
+                        Debug.WriteLine("Alt:   " + s1.altitude);
+                        Debug.WriteLine("Speed: " + s1.speed);
+                        Debug.WriteLine("Time: " + dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                        Debug.WriteLine("Time: " + s1.time);
+                        Debug.WriteLine("Magnetic heading: " + s1.magnetic_heading);
+                        Debug.WriteLine("Pitch: " + s1.pitch);
+                        Debug.WriteLine("Bank: " + s1.bank);
+
                         // Send info to ChartForm
                         altitude_chart.Series[0].Values.Add(s1.altitude);
                         speed_chart.Series[0].Values.Add(s1.speed);
                         pb_chart.Series[0].Values.Add(s1.pitch);
                         pb_chart.Series[1].Values.Add(s1.bank);
                         magnetic_heading_chart_vals.Add(new ObservablePolarPoint(RadiansToDegrees(s1.magnetic_heading), counter));
-                        
+
                         // Update text boxes with new data
                         timeTextBox.Text = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
                         latitudeTextBox.Text = s1.latitude.ToString("F6");
@@ -414,7 +457,7 @@ namespace Managed_Dashboard
             {
                 Dock = DockStyle.Fill
             };
-            
+
             // Define X axis
             altitude_chart.AxisX.Add(new LiveCharts.Wpf.Axis
             {
@@ -526,7 +569,7 @@ namespace Managed_Dashboard
         private void InitializeHeading()
         {
             magneticHeadingChart = new PolarChart();
-            magnetic_heading_chart_vals = new ObservableCollection<ObservablePolarPoint> {};
+            magnetic_heading_chart_vals = new ObservableCollection<ObservablePolarPoint> { };
             magneticHeadingChart.Series = new[]
             {
                 new PolarLineSeries<ObservablePolarPoint>
@@ -571,7 +614,7 @@ namespace Managed_Dashboard
             magneticHeadingChart.Location = new Point(90, 20);
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
         }
-        
+
         private void buttonConnect_Click(object sender, EventArgs e)
         {
             if (simconnect == null)
@@ -614,9 +657,9 @@ namespace Managed_Dashboard
             if (simconnect != null)
             {
                 simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-                if(DEBUG) Debug.WriteLine("Request sent...");
+                Debug.WriteLine("Request sent...");
             }
         }
-    
+
     }
 }
