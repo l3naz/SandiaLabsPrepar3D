@@ -232,7 +232,7 @@ namespace Managed_Dashboard
 
             if (hwndPrepar3D != IntPtr.Zero)
             {
-                Debug.WriteLine("Found Prepar3D window");
+                // Debug.WriteLine("Found Prepar3D window");
                 // Get the position and size of the Prepar3D window
                 RECT rect;
                 GetWindowRect(hwndPrepar3D, out rect);
@@ -254,6 +254,9 @@ namespace Managed_Dashboard
                         this.Left = rect.Left;
                         this.Width = rect.Right - rect.Left;
                         this.Height = rect.Bottom - rect.Top;
+
+                        // Update chart sizes to fill the new window dimensions
+                        UpdateChartSizes(width, height);
                     }
                 }
             }
@@ -261,6 +264,44 @@ namespace Managed_Dashboard
             {
                 Debug.WriteLine("Prepar3D window not found.");
             }
+        }
+
+        private void UpdateChartSizes(int windowWidth, int windowHeight)
+        {
+            // Set the size of the group boxes relative to the window size (e.g., 40% width, 20% height)
+            int groupBoxWidth = (int)(windowWidth * 0.2); // 40% of the window width
+            int groupBoxHeight = (int)(windowHeight * 0.2); // 20% of the window height
+
+            // Calculate the vertical offset to center the group boxes on the left and right sides
+            int leftSideY = (windowHeight - (2 * groupBoxHeight) - 20) / 2; // 20 is the total gap between the boxes
+            int rightSideY = leftSideY; // Symmetrical for the right side
+
+            // Set the positions for the left-side group boxes (altitude and speed) in the middle
+            altitudeGroupBox.Size = new Size(groupBoxWidth, groupBoxHeight);
+            altitudeGroupBox.Location = new Point(10, leftSideY); // Middle-left
+
+            speedGroupBox.Size = new Size(groupBoxWidth, groupBoxHeight);
+            speedGroupBox.Location = new Point(10, leftSideY + groupBoxHeight + 10); // Directly below the altitude group
+
+            // Set the positions for the right-side group boxes (pitch-bank and magnetic heading) in the middle
+            pbGroupBox.Size = new Size(groupBoxWidth, groupBoxHeight);
+            pbGroupBox.Location = new Point(windowWidth - groupBoxWidth - 10, rightSideY); // Middle-right
+
+            magneticHeadingGroupBox.Size = new Size(groupBoxWidth, groupBoxHeight);
+            magneticHeadingGroupBox.Location = new Point(windowWidth - groupBoxWidth - 10, rightSideY + groupBoxHeight + 10); // Directly below the pitch-bank group
+
+            // Ensure the charts are docked inside the group boxes
+            altitude_chart.Dock = DockStyle.Fill;
+            speed_chart.Dock = DockStyle.Fill;
+            pb_chart.Dock = DockStyle.Fill;
+            magneticHeadingChart.Dock = DockStyle.Fill;
+
+            // Refresh the layout to apply changes
+            chartPanel.Refresh();
+            altitudeGroupBox.Refresh();
+            speedGroupBox.Refresh();
+            pbGroupBox.Refresh();
+            magneticHeadingGroupBox.Refresh();
         }
 
 
