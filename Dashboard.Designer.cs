@@ -34,11 +34,15 @@ namespace Managed_Dashboard
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+
+            // Initialize the buttons
             this.buttonConnect = new System.Windows.Forms.Button();
             this.buttonDisconnect = new System.Windows.Forms.Button();
             this.toggleButton = new System.Windows.Forms.Button();
             this.collapsiblePanel = new System.Windows.Forms.Panel();
             this.SuspendLayout();
+
+
             // 
             // buttonConnect
             // 
@@ -50,6 +54,7 @@ namespace Managed_Dashboard
             this.buttonConnect.Text = "Connect to P3D";
             this.buttonConnect.UseVisualStyleBackColor = true;
             this.buttonConnect.Click += new System.EventHandler(this.buttonConnect_Click);
+
             // 
             // buttonDisconnect
             // 
@@ -61,6 +66,20 @@ namespace Managed_Dashboard
             this.buttonDisconnect.Text = "Disconnect from P3D";
             this.buttonDisconnect.UseVisualStyleBackColor = true;
             this.buttonDisconnect.Click += new System.EventHandler(this.buttonDisconnect_Click);
+
+            // 
+            // toggleButton
+            // 
+            this.toggleButton.Location = new System.Drawing.Point(330, 10);
+            this.toggleButton.Margin = new System.Windows.Forms.Padding(4);
+            this.toggleButton.Name = "toggleButton";
+            this.toggleButton.Size = new System.Drawing.Size(150, 38);
+            this.toggleButton.TabIndex = 2;
+            this.toggleButton.Text = "Hide dashboard";
+            this.toggleButton.UseVisualStyleBackColor = true;
+            this.toggleButton.Click += new System.EventHandler(this.TogglePanelsButton_Click);
+
+            
             // 
             // toggleButton
             // 
@@ -86,7 +105,11 @@ namespace Managed_Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+<<<<<<< HEAD
             this.ClientSize = new System.Drawing.Size(1373, 985);
+=======
+            this.ClientSize = new System.Drawing.Size(1030, 800);
+>>>>>>> 279e352 (Add hiding and showing dashboard functionality)
             this.Controls.Add(this.collapsiblePanel);
             this.Controls.Add(this.toggleButton);
             this.Controls.Add(this.buttonDisconnect);
@@ -98,7 +121,6 @@ namespace Managed_Dashboard
             this.Text = "Managed Dashboard";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.ResumeLayout(false);
-
         }
 
         #endregion

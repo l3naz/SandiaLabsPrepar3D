@@ -290,6 +290,7 @@ namespace Managed_Dashboard
                         this.Width = rect.Right - rect.Left;
                         this.Height = rect.Bottom - rect.Top;
 
+
                         this.collapsiblePanel.Location = new System.Drawing.Point(0, 0); // Set at starting position of collapsible panel
                         this.collapsiblePanel.Size = new System.Drawing.Size(this.ClientSize.Width, (int)(this.ClientSize.Height * 0.94)); // Reserve space for buttons at the bottom
                         this.collapsiblePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right; // Anchors to resize dynamically
