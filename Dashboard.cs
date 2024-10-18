@@ -190,6 +190,23 @@ namespace Managed_Dashboard
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
         }
 
+        private void TogglePanelsButton_Click(object sender, EventArgs e)
+        {
+            // Toggle visibility of the collapsible panel
+            if (collapsiblePanel.Visible)
+            {
+                collapsiblePanel.Visible = false; 
+                toggleButton.Text = "Hide dashboard";
+            }
+            else
+            {
+                collapsiblePanel.Visible = true; 
+                toggleButton.Text = "Show dashboard";
+            }
+        }
+
+
+
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
@@ -254,6 +271,10 @@ namespace Managed_Dashboard
                         this.Left = rect.Left;
                         this.Width = rect.Right - rect.Left;
                         this.Height = rect.Bottom - rect.Top;
+
+                        this.collapsiblePanel.Location = new System.Drawing.Point(0, buttonConnect.Location.Y + buttonConnect.Height + 10); // Set below the buttons with padding
+                        this.collapsiblePanel.Size = new System.Drawing.Size(this.ClientSize.Width, this.ClientSize.Height - (buttonConnect.Height + 20)); // Fill the remaining space below the buttons
+                        this.collapsiblePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right; // Anchors to resize dynamically
 
                         // Update chart sizes to fill the new window dimensions
                         UpdateChartSizes(width, height);
