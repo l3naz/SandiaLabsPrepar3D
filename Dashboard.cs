@@ -45,6 +45,7 @@ namespace Managed_Dashboard
         private GroupBox speedGroupBox;
         private GroupBox pbGroupBox;
         private GroupBox magneticHeadingGroupBox;
+        private GroupBox gForceGroupBox;
 
         private Label timeTextBox;
         private Label latitudeTextBox;
@@ -52,6 +53,8 @@ namespace Managed_Dashboard
         private Label timeLabel;
         private Label latitudeLabel;
         private Label longitudeLabel;
+        private Label gForceLabel;
+        private Label gForceTextBox;
 
         private double prev_time = 0;
         private double counter = 0;
@@ -84,6 +87,7 @@ namespace Managed_Dashboard
             public double magnetic_heading;
             public double pitch;
             public double bank;
+            public double gForce; // G-force value
         };
 
         private void InitializeTextBoxes()
@@ -91,40 +95,52 @@ namespace Managed_Dashboard
             timeLabel = new Label
             {
                 Text = "Time:",
-                Location = new Point(400, 12),
-                Size = new Size(100, 20)
+                Location = new Point(20, 90),
+                Size = new Size(100, 20),
+                ForeColor = Color.White,
+                BackColor = Color.Transparent
             };
 
             timeTextBox = new Label
             {
-                Location = new Point(400, 30),
-                Size = new Size(150, 20)
+                Location = new Point(20, 105),
+                Size = new Size(150, 20),
+                ForeColor = Color.White,
+                BackColor = Color.Transparent
             };
 
             latitudeLabel = new Label
             {
                 Text = "Latitude:",
-                Location = new Point(620, 12),
-                Size = new Size(100, 20)
+                Location = new Point(620, 90),
+                Size = new Size(100, 20),
+                ForeColor = Color.White,
+                BackColor = Color.Transparent
             };
 
             latitudeTextBox = new Label
             {
-                Location = new Point(620, 30),
-                Size = new Size(150, 20)
+                Location = new Point(620, 105),
+                Size = new Size(150, 20),
+                ForeColor = Color.White,
+                BackColor = Color.Transparent
             };
 
             longitudeLabel = new Label
             {
                 Text = "Longitude:",
-                Location = new Point(790, 12),
-                Size = new Size(100, 20)
+                Location = new Point(790, 90),
+                Size = new Size(100, 20),
+                ForeColor = Color.White,
+                BackColor = Color.Transparent
             };
 
             longitudeTextBox = new Label
             {
-                Location = new Point(790, 30),
-                Size = new Size(150, 20)
+                Location = new Point(790, 105),
+                Size = new Size(150, 20),
+                ForeColor = Color.White,
+                BackColor = Color.Transparent
             };
 
             Controls.Add(timeLabel);
@@ -183,11 +199,14 @@ namespace Managed_Dashboard
             InitializeSpeed();
             Initializepb();
             InitializeHeading();
+            InitializeGForce(); // Initialize the G-force GroupBox
 
             altitudeGroupBox.Controls.Add(altitude_chart);
             speedGroupBox.Controls.Add(speed_chart);
             pbGroupBox.Controls.Add(pb_chart);
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
+            gForceGroupBox.Controls.Add(gForceLabel);
+            gForceGroupBox.Controls.Add(gForceTextBox);
         }
 
         private void TogglePanelsButton_Click(object sender, EventArgs e)
@@ -277,6 +296,7 @@ namespace Managed_Dashboard
                         this.collapsiblePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right; // Anchors to resize dynamically
 
                         // Update chart sizes to fill the new window dimensions
+                        UpdateButtonSizesAndPositions(width, height);
                         UpdateChartSizes(width, height);
                     }
                 }
@@ -290,7 +310,7 @@ namespace Managed_Dashboard
         private void UpdateChartSizes(int windowWidth, int windowHeight)
         {
             // Set the size of the group boxes relative to the window size (e.g., 40% width, 20% height)
-            int groupBoxWidth = (int)(windowWidth * 0.2); // 40% of the window width
+            int groupBoxWidth = (int)(windowWidth * 0.2); // 20% of the window width
             int groupBoxHeight = (int)(windowHeight * 0.2); // 20% of the window height
 
             // Calculate the vertical offset to center the group boxes on the left and right sides
@@ -304,6 +324,9 @@ namespace Managed_Dashboard
             speedGroupBox.Size = new Size(groupBoxWidth, groupBoxHeight);
             speedGroupBox.Location = new Point(10, leftSideY + groupBoxHeight + 10); // Directly below the altitude group
 
+            gForceGroupBox.Size = new Size(groupBoxWidth, groupBoxHeight);
+            gForceGroupBox.Location = new Point(windowWidth - groupBoxWidth - 10, rightSideY - groupBoxHeight - 10);
+
             // Set the positions for the right-side group boxes (pitch-bank and magnetic heading) in the middle
             pbGroupBox.Size = new Size(groupBoxWidth, groupBoxHeight);
             pbGroupBox.Location = new Point(windowWidth - groupBoxWidth - 10, rightSideY); // Middle-right
@@ -316,6 +339,9 @@ namespace Managed_Dashboard
             speed_chart.Dock = DockStyle.Fill;
             pb_chart.Dock = DockStyle.Fill;
             magneticHeadingChart.Dock = DockStyle.Fill;
+            gForceLabel.Dock = DockStyle.Fill;
+            gForceTextBox.Dock = DockStyle.Fill;
+
 
             // Refresh the layout to apply changes
             chartPanel.Refresh();
@@ -323,6 +349,37 @@ namespace Managed_Dashboard
             speedGroupBox.Refresh();
             pbGroupBox.Refresh();
             magneticHeadingGroupBox.Refresh();
+            gForceGroupBox.Refresh();
+        }
+
+        private void UpdateButtonSizesAndPositions(int windowWidth, int windowHeight)
+        {
+            // Calculate button size relative to the window (e.g., 10% width, 5% height)
+            int buttonWidth = (int)(windowWidth * 0.1);
+            int buttonHeight = (int)(windowHeight * 0.05);
+
+            // Update Connect button size and position
+            buttonConnect.Size = new Size(buttonWidth, buttonHeight);
+            buttonConnect.Location = new Point(windowWidth - buttonWidth * 3 - 15, windowHeight - buttonHeight - 10); // Top-left corner
+
+            // Update Disconnect button size and position
+            buttonDisconnect.Size = new Size(buttonWidth, buttonHeight);
+            buttonDisconnect.Location = new Point(windowWidth - buttonWidth * 2 - 15, windowHeight - buttonHeight - 10); // Below Connect button
+
+            // Update Toggle Button size and position
+            toggleButton.Size = new Size(buttonWidth, buttonHeight);
+            toggleButton.Location = new Point(windowWidth - buttonWidth - 15, windowHeight - buttonHeight - 10); // Below Disconnect button
+
+            // Optionally, update other elements (e.g., collapsiblePanel)
+            // collapsiblePanel.Location = new System.Drawing.Point(0, toggleButton.Location.Y + toggleButton.Height + 10);
+            // collapsiblePanel.Size = new System.Drawing.Size(this.ClientSize.Width, this.ClientSize.Height - (toggleButton.Height + 30));
+            // collapsiblePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            // Refresh to apply changes
+            buttonConnect.Refresh();
+            buttonDisconnect.Refresh();
+            toggleButton.Refresh();
+            collapsiblePanel.Refresh();
         }
 
 
@@ -385,9 +442,16 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Pitch Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Bank Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
 
+                // Add to data definition for G-force
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane G-Force", "g", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+
+
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
                 // if you skip this step, you will only receive a uint in the .dwData field.
                 simconnect.RegisterDataDefineStruct<Struct1>(DEFINITIONS.Struct1);
+
+                // Request data for "Plane G-Force" along with other data
+                // simconnect.RequestDataOnSimObject(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, 0, SIMCONNECT_PERIOD.SIM_FRAME);
 
                 // catch a simobject data request
                 simconnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(simconnect_OnRecvSimobjectDataBytype);
@@ -422,6 +486,8 @@ namespace Managed_Dashboard
             closeConnection();
         }
 
+
+
         void simconnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
         {
 
@@ -431,6 +497,7 @@ namespace Managed_Dashboard
                     Struct1 s1 = (Struct1)data.dwData[0];
                     TimeSpan ts = TimeSpan.FromSeconds(s1.time);
                     DateTime dateTime = new DateTime(1, 1, 1, 0, 0, 0) + ts;
+
 
                     // Only update charts if the time has updated.
                     // Time will not update if simulation is paused.
@@ -446,6 +513,7 @@ namespace Managed_Dashboard
                         Debug.WriteLine("Magnetic heading: " + s1.magnetic_heading);
                         Debug.WriteLine("Pitch: " + s1.pitch);
                         Debug.WriteLine("Bank: " + s1.bank);
+                        Debug.WriteLine("G-force: " + s1.gForce);
 
                         // Send info to ChartForm
                         altitude_chart.Series[0].Values.Add(s1.altitude);
@@ -454,10 +522,14 @@ namespace Managed_Dashboard
                         pb_chart.Series[1].Values.Add(s1.bank);
                         magnetic_heading_chart_vals.Add(new ObservablePolarPoint(RadiansToDegrees(s1.magnetic_heading), counter));
 
+
                         // Update text boxes with new data
                         timeTextBox.Text = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
                         latitudeTextBox.Text = s1.latitude.ToString("F6");
                         longitudeTextBox.Text = s1.longitude.ToString("F6");
+                        gForceTextBox.Text = s1.gForce.ToString();
+                        // gForceLabel.Text = $"G-force: {s1.gForce:F2} Gs";
+
                         prev_time = s1.time;
                         counter += 1;
                     }
@@ -474,6 +546,31 @@ namespace Managed_Dashboard
             if (x < 0) x += 360;
             return x;
         }
+
+        private void InitializeGForce()
+        {
+
+            // Initialize the G-force label
+            gForceLabel = new Label
+            {
+                Text = "G-force:",
+                Location = new Point(520, 100),
+                Size = new Size(1000, 100),
+                ForeColor = Color.White,
+                BackColor = Color.Transparent
+            };
+
+            // Initialize the G-force text box
+            gForceTextBox = new Label
+            {
+                Text = "0.00", // Default value
+                Location = new Point(550, 100), // Position within the GroupBox
+                Size = new Size(1000, 100),
+                ForeColor = Color.White,
+                BackColor = Color.Transparent
+            };
+        }
+
         private void InitializeAllGroupBox()
         {
             altitudeGroupBox = new GroupBox()
@@ -506,8 +603,16 @@ namespace Managed_Dashboard
                 Size = new Size(500, 350),
             };
 
+            gForceGroupBox = new GroupBox
+            {
+                Text = "G-Force",
+                Location = new Point(520, 70),
+                Size = new Size(500, 80),
+            };
+
             chartPanel.Controls.Add(altitudeGroupBox);
             chartPanel.Controls.Add(speedGroupBox);
+            chartPanel.Controls.Add(gForceGroupBox);
             chartPanel.Controls.Add(pbGroupBox);
             chartPanel.Controls.Add(magneticHeadingGroupBox);
         }
@@ -676,6 +781,9 @@ namespace Managed_Dashboard
             magneticHeadingChart.Location = new Point(90, 20);
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
         }
+
+
+
 
         private void buttonConnect_Click(object sender, EventArgs e)
         {
