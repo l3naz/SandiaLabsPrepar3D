@@ -54,7 +54,6 @@ namespace Managed_Dashboard
         private Label latitudeLabel;
         private Label longitudeLabel;
         private Label gForceLabel;
-        private Label gForceTextBox;
 
         private double prev_time = 0;
         private double counter = 0;
@@ -206,7 +205,7 @@ namespace Managed_Dashboard
             pbGroupBox.Controls.Add(pb_chart);
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
             gForceGroupBox.Controls.Add(gForceLabel);
-            gForceGroupBox.Controls.Add(gForceTextBox);
+            
         }
 
         private void TogglePanelsButton_Click(object sender, EventArgs e)
@@ -340,7 +339,6 @@ namespace Managed_Dashboard
             pb_chart.Dock = DockStyle.Fill;
             magneticHeadingChart.Dock = DockStyle.Fill;
             gForceLabel.Dock = DockStyle.Fill;
-            gForceTextBox.Dock = DockStyle.Fill;
 
 
             // Refresh the layout to apply changes
@@ -443,7 +441,7 @@ namespace Managed_Dashboard
                 simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane Bank Degrees", "radians", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
 
                 // Add to data definition for G-force
-                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "Plane G-Force", "g", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                simconnect.AddToDataDefinition(DEFINITIONS.Struct1, "G FORCE", "GForce", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
 
 
                 // IMPORTANT: register it with the simconnect managed wrapper marshaller
@@ -527,8 +525,7 @@ namespace Managed_Dashboard
                         timeTextBox.Text = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
                         latitudeTextBox.Text = s1.latitude.ToString("F6");
                         longitudeTextBox.Text = s1.longitude.ToString("F6");
-                        gForceTextBox.Text = s1.gForce.ToString();
-                        // gForceLabel.Text = $"G-force: {s1.gForce:F2} Gs";
+                        gForceLabel.Text = $"G-force: {s1.gForce:F2} Gs";
 
                         prev_time = s1.time;
                         counter += 1;
@@ -555,16 +552,6 @@ namespace Managed_Dashboard
             {
                 Text = "G-force:",
                 Location = new Point(520, 100),
-                Size = new Size(1000, 100),
-                ForeColor = Color.White,
-                BackColor = Color.Transparent
-            };
-
-            // Initialize the G-force text box
-            gForceTextBox = new Label
-            {
-                Text = "0.00", // Default value
-                Location = new Point(550, 100), // Position within the GroupBox
                 Size = new Size(1000, 100),
                 ForeColor = Color.White,
                 BackColor = Color.Transparent
