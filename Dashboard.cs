@@ -12,6 +12,7 @@
 //
 
 using System;
+using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Diagnostics;
@@ -381,6 +382,43 @@ namespace Managed_Dashboard
             collapsiblePanel.Refresh();
         }
 
+        private string filePath;
+
+        public void InitializeCsvLog()
+        {
+            // Get the current working directory of the application
+            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Generate a unique file name with a timestamp
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");  // Format: YYYYMMDD_HHMMSS
+            filePath = Path.Combine(currentDirectory, $"flightDataLog_{timestamp}.csv");
+
+            // Create the file and write headers
+            using (StreamWriter sw = new StreamWriter(filePath, false))
+            {
+                sw.WriteLine("Timestamp,Latitude,Longitude,Altitude,Speed,MagneticHeading,Pitch,Bank");
+            }
+        }
+
+        private void LogDataToCsv(Struct1 s1)
+        {
+            
+            if (string.IsNullOrEmpty(filePath))
+            {
+                InitializeCsvLog();  
+            }
+
+            
+            string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            // Append data to the CSV file
+            using (StreamWriter sw = new StreamWriter(filePath, true))
+            {
+                sw.WriteLine($"{timestamp},{s1.latitude},{s1.longitude},{s1.altitude},{s1.speed},{s1.magnetic_heading},{s1.pitch},{s1.bank}");
+            }
+        }
+
+
 
 
         // Simconnect client will send a win32 message when there is 
@@ -528,6 +566,10 @@ namespace Managed_Dashboard
                         longitudeTextBox.Text = s1.longitude.ToString("F6");
                         gForceLabel.Text = $"G-force: {s1.gForce:F2} Gs";
 
+                        // Log data to CSV
+                        LogDataToCsv(s1);
+ 
+
                         prev_time = s1.time;
                         counter += 1;
                     }
@@ -538,6 +580,7 @@ namespace Managed_Dashboard
                     break;
             }
         }
+
         private double RadiansToDegrees(double x)
         {
             x *= (180 / Math.PI);
@@ -783,6 +826,7 @@ namespace Managed_Dashboard
                     simconnect = new SimConnect("Managed Dashboard", this.Handle, WM_USER_SIMCONNECT, null, 0);
                     setButtons(false, true);
                     initDataRequest();
+                    InitializeCsvLog();
                 }
                 catch (COMException ex)
                 {
