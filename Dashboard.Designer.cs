@@ -105,11 +105,7 @@ namespace Managed_Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-<<<<<<< HEAD
-            this.ClientSize = new System.Drawing.Size(1373, 985);
-=======
             this.ClientSize = new System.Drawing.Size(1030, 800);
->>>>>>> 279e352 (Add hiding and showing dashboard functionality)
             this.Controls.Add(this.collapsiblePanel);
             this.Controls.Add(this.toggleButton);
             this.Controls.Add(this.buttonDisconnect);
