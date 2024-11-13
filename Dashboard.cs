@@ -534,6 +534,7 @@ namespace Managed_Dashboard
                     Struct1 s1 = (Struct1)data.dwData[0];
                     TimeSpan ts = TimeSpan.FromSeconds(s1.time);
                     DateTime dateTime = new DateTime(1, 1, 1, 0, 0, 0) + ts;
+                    double angleInDegrees = RadiansToDegrees(s1.magnetic_heading);
 
 
                     // Only update charts if the time has updated.
@@ -557,7 +558,11 @@ namespace Managed_Dashboard
                         speed_chart.Series[0].Values.Add(s1.speed);
                         pb_chart.Series[0].Values.Add(s1.pitch);
                         pb_chart.Series[1].Values.Add(s1.bank);
-                        magnetic_heading_chart_vals.Add(new ObservablePolarPoint(RadiansToDegrees(s1.magnetic_heading), counter));
+
+                        // Update both points to form a line at the new angle
+                        magnetic_heading_chart_vals[0] = new ObservablePolarPoint(angleInDegrees, 0);   // Point at center
+                        magnetic_heading_chart_vals[1] = new ObservablePolarPoint(angleInDegrees, 100); // Point at max radius
+                        // magnetic_heading_chart_vals.Add(new ObservablePolarPoint(RadiansToDegrees(s1.magnetic_heading), counter));
 
 
                         // Update text boxes with new data
@@ -764,10 +769,16 @@ namespace Managed_Dashboard
             pb_chart.Series.Add(pitchSeries);
             pb_chart.Series.Add(bankSeries);
         }
+
         private void InitializeHeading()
         {
             magneticHeadingChart = new PolarChart();
-            magnetic_heading_chart_vals = new ObservableCollection<ObservablePolarPoint> { };
+            magnetic_heading_chart_vals = new ObservableCollection<ObservablePolarPoint> 
+            {
+                new ObservablePolarPoint(0, 0),   // Point at center with radius 0
+                new ObservablePolarPoint(0, 100)  // Point at maximum radius (adjust as needed)
+            };
+
             magneticHeadingChart.Series = new[]
             {
                 new PolarLineSeries<ObservablePolarPoint>
@@ -775,8 +786,11 @@ namespace Managed_Dashboard
                     Values = magnetic_heading_chart_vals,
                     Fill = null,
                     IsClosed = false,
-                    GeometrySize = 5,
-
+                    GeometrySize = 0,
+                    Stroke = new SolidColorPaint(SKColors.Red)
+                    {
+                        StrokeThickness = 5,
+                    },
                 }
             };
 
@@ -784,18 +798,31 @@ namespace Managed_Dashboard
             {
                 new PolarAxis
                 {
-                    TextSize = 10,
+                    TextSize = 15,
                     LabelsPaint = new SolidColorPaint(SKColors.Green),
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
                     {
                         StrokeThickness = 1,
-                        PathEffect = new DashEffect(new float[] {3, 3})
+                        PathEffect = new DashEffect(new float[] {5, 5})
                     },
                     MinLimit = 0,
                     MaxLimit = 360,
-                    Labeler = angle => $"{angle}°",
+                    Labeler = angle =>
+                    {
+                        if (angle == 0)
+                            return "N";
+                        else if (angle == 90)
+                            return "E";
+                        else if (angle == 180)
+                            return "S";
+                        else if (angle == 270)
+                            return "W";
+                        else
+                            return ""; // Empty label for other angles
+                    },
                     ForceStepToMin = true,
-                    MinStep = 30,
+                    MinStep = 90, // Set 90-degree intervals to show only the cardinal labels
+
                 }
             };
 
@@ -806,11 +833,15 @@ namespace Managed_Dashboard
                     TextSize = 10,
                     LabelsPaint = new SolidColorPaint(SKColors.Blue),
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 },
+                    MinLimit = 0,
+                    MaxLimit = 100,
+                    Labeler = value => (value == 50 || value == 100) ? "" : value.ToString(), // Remove 50 and 100 labels
                 }
             };
-            magneticHeadingChart.Size = new System.Drawing.Size(325, 325);
-            magneticHeadingChart.Location = new Point(90, 20);
+            // magneticHeadingChart.Size = new System.Drawing.Size(325, 325);
+            // magneticHeadingChart.Location = new Point(90, 20);
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
+
         }
 
 
