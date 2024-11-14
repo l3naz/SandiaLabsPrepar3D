@@ -798,7 +798,7 @@ namespace Managed_Dashboard
             {
                 new PolarAxis
                 {
-                    TextSize = 15,
+                    TextSize = 18,
                     LabelsPaint = new SolidColorPaint(SKColors.Green),
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
                     {
@@ -838,8 +838,6 @@ namespace Managed_Dashboard
                     Labeler = value => (value == 50 || value == 100) ? "" : value.ToString(), // Remove 50 and 100 labels
                 }
             };
-            // magneticHeadingChart.Size = new System.Drawing.Size(325, 325);
-            // magneticHeadingChart.Location = new Point(90, 20);
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
 
         }
