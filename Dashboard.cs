@@ -396,7 +396,7 @@ namespace Managed_Dashboard
             // Create the file and write headers
             using (StreamWriter sw = new StreamWriter(filePath, false))
             {
-                sw.WriteLine("Timestamp,Latitude,Longitude,Altitude,Speed,MagneticHeading,Pitch,Bank");
+                sw.WriteLine("Timestamp,Latitude,Longitude,Altitude,Speed,G-Force,MagneticHeading,Pitch,Bank");
             }
         }
 
@@ -414,7 +414,7 @@ namespace Managed_Dashboard
             // Append data to the CSV file
             using (StreamWriter sw = new StreamWriter(filePath, true))
             {
-                sw.WriteLine($"{timestamp},{s1.latitude},{s1.longitude},{s1.altitude},{s1.speed},{s1.magnetic_heading},{s1.pitch},{s1.bank}");
+                sw.WriteLine($"{timestamp},{s1.latitude},{s1.longitude},{s1.altitude},{s1.speed},{s1.gForce},{s1.magnetic_heading},{s1.pitch},{s1.bank}");
             }
         }
 
