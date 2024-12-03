@@ -40,7 +40,18 @@ namespace Managed_Dashboard
             this.buttonDisconnect = new System.Windows.Forms.Button();
             this.toggleButton = new System.Windows.Forms.Button();
             this.collapsiblePanel = new System.Windows.Forms.Panel();
+            this.buttonTestReport = new System.Windows.Forms.Button();
             this.SuspendLayout();
+
+            // buttonTestReport (New Button)
+            this.buttonTestReport.Location = new System.Drawing.Point(653, 12); // Adjust location as needed
+            this.buttonTestReport.Margin = new System.Windows.Forms.Padding(5);
+            this.buttonTestReport.Name = "buttonTestReport";
+            this.buttonTestReport.Size = new System.Drawing.Size(200, 47);
+            this.buttonTestReport.TabIndex = 3;
+            this.buttonTestReport.Text = "Generate Test Report";
+            this.buttonTestReport.UseVisualStyleBackColor = true;
+            this.buttonTestReport.Click += new System.EventHandler(this.buttonTestReport_Click);
 
 
             // 
@@ -105,7 +116,8 @@ namespace Managed_Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1030, 800);
+            this.ClientSize = new System.Drawing.Size(1373, 985);
+            this.Controls.Add(this.buttonTestReport);
             this.Controls.Add(this.collapsiblePanel);
             this.Controls.Add(this.toggleButton);
             this.Controls.Add(this.buttonDisconnect);
@@ -126,6 +138,9 @@ namespace Managed_Dashboard
 
         private System.Windows.Forms.Panel collapsiblePanel;
         private System.Windows.Forms.Button toggleButton;
+
+        private System.Windows.Forms.Button buttonTestReport;
+
 
     }
 }

@@ -27,6 +27,8 @@ using LiveChartsCore.SkiaSharpView.WinForms;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 // using Topshelf.Runtime.Windows;
 
 
@@ -209,20 +211,7 @@ namespace Managed_Dashboard
             
         }
 
-        private void TogglePanelsButton_Click(object sender, EventArgs e)
-        {
-            // Toggle visibility of the collapsible panel
-            if (collapsiblePanel.Visible)
-            {
-                collapsiblePanel.Visible = false; 
-                toggleButton.Text = "Hide dashboard";
-            }
-            else
-            {
-                collapsiblePanel.Visible = true; 
-                toggleButton.Text = "Show dashboard";
-            }
-        }
+        
 
 
 
@@ -417,6 +406,32 @@ namespace Managed_Dashboard
                 sw.WriteLine($"{timestamp},{s1.latitude},{s1.longitude},{s1.altitude},{s1.speed},{s1.gForce},{s1.magnetic_heading},{s1.pitch},{s1.bank}");
             }
         }
+
+        public void InitializePdfReport()
+        {
+            string pdfFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FlightReport.pdf");
+
+            using (FileStream stream = new FileStream(pdfFilePath, FileMode.Create))
+            {
+                Document document = new Document();
+                PdfWriter.GetInstance(document, stream);
+                document.Open();
+
+                // Define fonts with explicit iTextSharp references
+                iTextSharp.text.Font titleFont = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 18, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font bodyFont = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12);
+
+                // Add a title and report date
+                document.Add(new iTextSharp.text.Paragraph("Flight Report", titleFont));
+                document.Add(new iTextSharp.text.Paragraph($"Report Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n\n", bodyFont));
+
+                document.Close();
+            }
+
+            MessageBox.Show($"Initialized PDF with title at: {pdfFilePath}", "PDF Initialization", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+
 
 
 
@@ -840,6 +855,26 @@ namespace Managed_Dashboard
             };
             magneticHeadingGroupBox.Controls.Add(magneticHeadingChart);
 
+        }
+
+        private void TogglePanelsButton_Click(object sender, EventArgs e)
+        {
+            // Toggle visibility of the collapsible panel
+            if (collapsiblePanel.Visible)
+            {
+                collapsiblePanel.Visible = false;
+                toggleButton.Text = "Hide dashboard";
+            }
+            else
+            {
+                collapsiblePanel.Visible = true;
+                toggleButton.Text = "Show dashboard";
+            }
+        }
+
+        private void buttonTestReport_Click(object sender, EventArgs e)
+        {
+            InitializePdfReport();
         }
 
 
