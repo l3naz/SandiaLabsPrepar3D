@@ -43,8 +43,8 @@ namespace Managed_Dashboard
             this.buttonTestReport = new System.Windows.Forms.Button();
             this.SuspendLayout();
 
-            // buttonTestReport (New Button)
-            this.buttonTestReport.Location = new System.Drawing.Point(653, 12); // Adjust location as needed
+            // buttonTestReport 
+            this.buttonTestReport.Location = new System.Drawing.Point(653, 12); 
             this.buttonTestReport.Margin = new System.Windows.Forms.Padding(5);
             this.buttonTestReport.Name = "buttonTestReport";
             this.buttonTestReport.Size = new System.Drawing.Size(200, 47);

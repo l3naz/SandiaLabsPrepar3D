@@ -29,6 +29,7 @@ using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using System.Linq;
 // using Topshelf.Runtime.Windows;
 
 
@@ -347,6 +348,10 @@ namespace Managed_Dashboard
             int buttonWidth = (int)(windowWidth * 0.1);
             int buttonHeight = (int)(windowHeight * 0.05);
 
+            // Update Report Size and position
+            buttonTestReport.Size = new Size(buttonWidth, buttonHeight);
+            buttonTestReport.Location = new Point(windowWidth - buttonWidth * 4 - 15, windowHeight - buttonHeight - 10);
+
             // Update Connect button size and position
             buttonConnect.Size = new Size(buttonWidth, buttonHeight);
             buttonConnect.Location = new Point(windowWidth - buttonWidth * 3 - 15, windowHeight - buttonHeight - 10); // Top-left corner
@@ -365,6 +370,7 @@ namespace Managed_Dashboard
             // collapsiblePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
             // Refresh to apply changes
+            buttonTestReport.Refresh();
             buttonConnect.Refresh();
             buttonDisconnect.Refresh();
             toggleButton.Refresh();
@@ -407,9 +413,20 @@ namespace Managed_Dashboard
             }
         }
 
-        public void InitializePdfReport()
+        public void AddCsvDataToPdfReport()
         {
-            string pdfFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FlightReport.pdf");
+            string pdfFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FlightReport_WithData.pdf");
+
+            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string[] csvFiles = Directory.GetFiles(currentDirectory, "flightDataLog_*.csv");
+
+            if (csvFiles.Length == 0)
+            {
+                MessageBox.Show("No CSV files found! Ensure flight data has been logged.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string latestCsvFile = csvFiles.OrderByDescending(f => File.GetCreationTime(f)).FirstOrDefault();
 
             using (FileStream stream = new FileStream(pdfFilePath, FileMode.Create))
             {
@@ -417,20 +434,49 @@ namespace Managed_Dashboard
                 PdfWriter.GetInstance(document, stream);
                 document.Open();
 
-                // Define fonts with explicit iTextSharp references
-                iTextSharp.text.Font titleFont = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 18, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font bodyFont = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12);
+                // Define fonts
+                iTextSharp.text.Font titleFont = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 14, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font bodyFont = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10);
 
-                // Add a title and report date
-                document.Add(new iTextSharp.text.Paragraph("Flight Report", titleFont));
-                document.Add(new iTextSharp.text.Paragraph($"Report Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n\n", bodyFont));
+                // Add a title
+                document.Add(new Paragraph("Flight Report with Data", titleFont));
+                document.Add(new Paragraph($"Report Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n\n", bodyFont));
 
+                // Define the table structure
+                PdfPTable table = new PdfPTable(9); 
+                table.AddCell("Timestamp");
+                table.AddCell("Latitude");
+                table.AddCell("Longitude");
+                table.AddCell("Altitude");
+                table.AddCell("Speed");
+                table.AddCell("G-Force");
+                table.AddCell("Magnetic Heading");
+                table.AddCell("Pitch");
+                table.AddCell("Bank");
+
+                // Read data from the latest CSV and populate the table
+                using (StreamReader reader = new StreamReader(latestCsvFile))
+                {
+                    reader.ReadLine();
+
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        string[] fields = line.Split(',');
+                        foreach (string field in fields)
+                        {
+                            table.AddCell(new PdfPCell(new Phrase(field, bodyFont)));
+                        }
+                    }
+                }
+
+                // Add the table to the document
+                document.Add(table);
                 document.Close();
             }
 
-            MessageBox.Show($"Initialized PDF with title at: {pdfFilePath}", "PDF Initialization", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"PDF with data created at: {pdfFilePath}", "PDF Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
 
 
 
@@ -874,7 +920,7 @@ namespace Managed_Dashboard
 
         private void buttonTestReport_Click(object sender, EventArgs e)
         {
-            InitializePdfReport();
+            AddCsvDataToPdfReport();
         }
 
 
